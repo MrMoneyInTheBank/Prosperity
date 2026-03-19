@@ -1,7 +1,7 @@
 [project]
 name = "prosperity"
 version = "0.1.0"
-description = "Add your description here"
+description = "Quantitative trading research and strategy development for IMC Prosperity, including backtesting and simulation infrastructure."
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = []
