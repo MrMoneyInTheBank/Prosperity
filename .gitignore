@@ -123,3 +123,6 @@ coverage.xml
 *.env
 
 # =========================
+
+# historical data
+/data
