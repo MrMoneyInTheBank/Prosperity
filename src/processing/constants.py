@@ -30,6 +30,18 @@ ORDERBOOK_SCHEMA: t.Final[SchemaType] = {
 
 ORDERBOOK_DROP_COLS: t.Final[list[str]] = ["day", "product", "profit_and_loss"]
 
+TRADES_SCHEMA: t.Final[SchemaType] = {
+    "timestamp": pl.Int64,
+    "buyer": pl.String,
+    "seller": pl.String,
+    "symbol": pl.String,
+    "currency": pl.String,
+    "price": pl.Float64,
+    "quantity": pl.Int64,
+}
+
+TRADES_DROP_COLS: t.Final[list[str]] = ["buyer", "seller", "currency"]
+
 
 class Side(StrEnum):
     BID = "bid"
