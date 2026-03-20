@@ -1,9 +1,14 @@
 from enum import StrEnum
 import typing as t
+import collections.abc as c
 
 import polars as pl
+import polars.type_aliases as pt
 
-ORDERBOOK_SCHEMA: t.Final[t.Dict[str, type[pl.DataType]]] = {
+AggFnType = c.Callable[[c.Iterable[pt.IntoExpr]], pl.Expr]
+SchemaType = dict[str, type[pl.DataType]]
+
+ORDERBOOK_SCHEMA: t.Final[SchemaType] = {
     "day": pl.Int64,
     "timestamp": pl.Int64,
     "product": pl.String,
@@ -23,7 +28,7 @@ ORDERBOOK_SCHEMA: t.Final[t.Dict[str, type[pl.DataType]]] = {
     "profit_and_loss": pl.Float64,
 }
 
-ORDERBOOK_DROP_COLS: t.Final[t.List[str]] = ["day", "product", "profit_and_loss"]
+ORDERBOOK_DROP_COLS: t.Final[list[str]] = ["day", "product", "profit_and_loss"]
 
 
 class Side(StrEnum):
