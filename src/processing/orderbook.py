@@ -15,6 +15,7 @@ from processing.constants import (
 
 class OrderBookDataset(BaseDataset):
     schema = ORDERBOOK_SCHEMA
+    product_key = "product"
 
     def for_product(self, product: str) -> "OrderBookDataProcessor":
         if product not in self.products():

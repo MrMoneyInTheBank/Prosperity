@@ -9,6 +9,7 @@ from processing.base_processor import BaseProcessor
 
 class BaseDataset(ABC):
     schema: t.ClassVar[dict[str, type[pl.DataType]]]
+    product_key: t.ClassVar[str]
 
     def __init__(self, csv_path: Path) -> None:
         self.csv_path: Path = csv_path
@@ -42,7 +43,7 @@ class BaseDataset(ABC):
                 )
 
     def products(self) -> list[str]:
-        return self._raw_data.select("product").unique().to_series().to_list()
+        return self._raw_data.select(self.product_key).unique().to_series().to_list()
 
     @abstractmethod
     def for_product(self, product: str) -> BaseProcessor:
