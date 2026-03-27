@@ -4,7 +4,7 @@ from pathlib import Path
 
 import polars as pl
 
-from processing.base_processor import BaseProcessor
+from src.processing.base_processor import BaseProcessor
 
 
 class BaseDataset(ABC):
@@ -20,7 +20,7 @@ class BaseDataset(ABC):
         try:
             return pl.read_csv(source=self.csv_path, separator=";")
         except FileNotFoundError:
-            raise FileNotFoundError("Could not find csv file at given location.")
+            raise FileNotFoundError(f"Could not find csv file at given location: {self.csv_path}")
 
     def validate_schema(self) -> None:
         cols: set[str] = set(self._raw_data.columns)
