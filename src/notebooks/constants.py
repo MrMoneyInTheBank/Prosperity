@@ -7,6 +7,7 @@ ROOT_DIR: t.Final[Path] = find_project_root(Path.cwd())
 DATA_DIR: t.Final[Path] = ROOT_DIR / "data"
 
 EMERALDS: t.Final[str] = "EMERALDS"
+TOMATOES: t.Final[str] = "TOMATOES"
 
 ORDERBOOK_LEVELS: t.Final[int] = 3
 
