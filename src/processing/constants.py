@@ -37,8 +37,8 @@ ORDERBOOK_FEATURES: t.Final[list[str]] = [
     "future_log_returns",
     "microprice",
     "microprice_dev",
-    "depth"
-    ]
+    "depth",
+]
 
 TRADES_SCHEMA: t.Final[SchemaType] = {
     "timestamp": pl.Int64,

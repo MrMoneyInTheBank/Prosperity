@@ -21,10 +21,10 @@ class TradesDataProcessor(BaseProcessor):
     def __init__(self, raw_data: pl.DataFrame, product: str) -> None:
         self._data = raw_data
         self.product = product
-    
+
     def clean(self) -> "TradesDataProcessor":
         self._data = self._data.drop(TRADES_DROP_COLS)
         return self
-    
+
     def build(self) -> pl.DataFrame:
         return self._data

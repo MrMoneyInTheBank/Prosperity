@@ -20,7 +20,9 @@ class BaseDataset(ABC):
         try:
             return pl.read_csv(source=self.csv_path, separator=";")
         except FileNotFoundError:
-            raise FileNotFoundError(f"Could not find csv file at given location: {self.csv_path}")
+            raise FileNotFoundError(
+                f"Could not find csv file at given location: {self.csv_path}"
+            )
 
     def validate_schema(self) -> None:
         cols: set[str] = set(self._raw_data.columns)

@@ -70,16 +70,11 @@ class OrderBookDataProcessor(BaseProcessor):
                         (pl.col("ask_price_1") * pl.col("bid_volume_1"))
                         + (pl.col("bid_price_1") * pl.col("ask_volume_1"))
                     )
-                    /
-                    (
-                        pl.col("bid_volume_1") + pl.col("ask_volume_1")
-                    )
-                )
-                .alias("microprice")
+                    / (pl.col("bid_volume_1") + pl.col("ask_volume_1"))
+                ).alias("microprice")
             )
             .with_columns(
-                (pl.col("microprice") - pl.col("mid_price"))
-                .alias("microprice_dev")
+                (pl.col("microprice") - pl.col("mid_price")).alias("microprice_dev")
             )
         )
         return self
