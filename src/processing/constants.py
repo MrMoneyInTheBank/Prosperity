@@ -29,6 +29,16 @@ ORDERBOOK_SCHEMA: t.Final[SchemaType] = {
 }
 
 ORDERBOOK_DROP_COLS: t.Final[list[str]] = ["day", "product", "profit_and_loss"]
+ORDERBOOK_FEATURES: t.Final[list[str]] = [
+    "mid_price",
+    "spread",
+    "imbalance",
+    "log_returns",
+    "future_log_returns",
+    "microprice",
+    "microprice_dev",
+    "depth"
+    ]
 
 TRADES_SCHEMA: t.Final[SchemaType] = {
     "timestamp": pl.Int64,
