@@ -57,11 +57,31 @@ class OrderBookDataProcessor(BaseProcessor):
         return self
 
     def add_price_features(self) -> "OrderBookDataProcessor":
-        self._data = self._data.with_columns(
-            (pl.col("mid_price") / pl.col("mid_price").shift(1))
-            .log(math.e)
-            .alias("log_returns"),
-        ).with_columns((pl.col("log_returns").shift(-1).alias("future_log_returns")))
+        self._data = (
+            self._data.with_columns(
+                (pl.col("mid_price") / pl.col("mid_price").shift(1))
+                .log(math.e)
+                .alias("log_returns")
+            )
+            .with_columns(pl.col("log_returns").shift(-1).alias("future_log_returns"))
+            .with_columns(
+                (
+                    (
+                        (pl.col("ask_price_1") * pl.col("bid_volume_1"))
+                        + (pl.col("bid_price_1") * pl.col("ask_volume_1"))
+                    )
+                    /
+                    (
+                        pl.col("bid_volume_1") + pl.col("ask_volume_1")
+                    )
+                )
+                .alias("microprice")
+            )
+            .with_columns(
+                (pl.col("microprice") - pl.col("mid_price"))
+                .alias("microprice_dev")
+            )
+        )
         return self
 
     def add_depth_features(self) -> "OrderBookDataProcessor":
