@@ -24,6 +24,7 @@ SRC_DIR: t.Final[Path] = ROOT_DIR / "src"
 TEMPLATES_DIR: t.Final[Path] = SRC_DIR / "templates"
 TRADERS_DIR: t.Final[Path] = ROOT_DIR / "src" / "traders"
 PRODUCT_TRADERS_DIR: t.Final[Path] = TRADERS_DIR / "product_traders"
+TRADERS_HISTORY_DIR: t.Final[Path] = TRADERS_DIR / "history"
 
 
 # Files
