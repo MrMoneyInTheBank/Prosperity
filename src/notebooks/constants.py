@@ -10,16 +10,3 @@ EMERALDS: t.Final[str] = "EMERALDS"
 TOMATOES: t.Final[str] = "TOMATOES"
 
 ORDERBOOK_LEVELS: t.Final[int] = 3
-
-ROUND_0_DAY_M2_PRICES: t.Final[Path] = (
-    DATA_DIR / "round-0/day_-2/prices_round_0_day_-2.csv"
-)
-ROUND_0_DAY_M2_TRADES: t.Final[Path] = (
-    DATA_DIR / "round-0/day_-2/trades_round_0_day_-2.csv"
-)
-ROUND_0_DAY_M1_PRICES: t.Final[Path] = (
-    DATA_DIR / "round-0/day_-1/prices_round_0_day_-1.csv"
-)
-ROUND_0_DAY_M1_TRADES: t.Final[Path] = (
-    DATA_DIR / "round-0/day_-1/trades_round_0_day_-1.csv"
-)
