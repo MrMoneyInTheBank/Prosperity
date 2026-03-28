@@ -1,5 +1,5 @@
-import typing as t
 from operator import itemgetter
+import typing as t
 
 from datamodel import OrderDepth, TradingState, Order
 

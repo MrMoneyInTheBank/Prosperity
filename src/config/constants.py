@@ -1,7 +1,7 @@
 import collections.abc as c
 from enum import StrEnum
-import typing as t
 from pathlib import Path
+import typing as t
 
 import polars as pl
 import polars.type_aliases as pt
