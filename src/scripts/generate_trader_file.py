@@ -72,7 +72,11 @@ def generate_trader_submission_file(
         f.write("\n")
 
 
-if __name__ == "__main__":
+def main() -> None:
     generate_trader_submission_file(
         product_traders_dir=PRODUCT_TRADERS_DIR, trader_file_path=TRADER_FILE
     )
+
+
+if __name__ == "__main__":
+    main()
