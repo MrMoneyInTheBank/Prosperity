@@ -1,7 +1,6 @@
+import typing as t
 from abc import ABC, abstractmethod
 from pathlib import Path
-import typing as t
-
 
 import polars as pl
 

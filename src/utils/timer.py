@@ -1,5 +1,5 @@
-import time
 import functools as ft
+import time
 import typing as t
 
 P = t.ParamSpec("P")

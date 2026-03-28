@@ -1,5 +1,5 @@
-from pathlib import Path
 import typing as t
+from pathlib import Path
 
 TOML_FILE_NAME: t.Final[str] = "pyproject.toml"
 GIT_DIR_NAME: t.Final[str] = ".git"

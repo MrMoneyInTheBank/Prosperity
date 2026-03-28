@@ -1,5 +1,5 @@
-from src.traders.product_traders.a_base_trader import BaseTrader, Product
 from datamodel import Order, TradingState
+from src.traders.product_traders.a_base_trader import BaseTrader, Product
 
 
 class EmeraldTrader(BaseTrader):

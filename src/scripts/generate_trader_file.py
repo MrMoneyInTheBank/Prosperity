@@ -1,14 +1,14 @@
+import re
+import subprocess
+import typing as t
 from datetime import datetime
 from pathlib import Path
-import re
-import typing as t
-import subprocess
 
 from src.config.constants import (
     PRODUCT_TRADERS_DIR,
     TRADER_FILE,
-    TRADER_HEADER_FILE,
     TRADER_FOOTER_FILE,
+    TRADER_HEADER_FILE,
 )
 
 IMPORT_RE: t.Final[re.Pattern[str]] = re.compile(

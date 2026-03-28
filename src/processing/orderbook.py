@@ -2,15 +2,15 @@ import math
 
 import polars as pl
 
+from src.config.constants import (
+    ORDERBOOK_DROP_COLS,
+    ORDERBOOK_SCHEMA,
+    AggFnType,
+    QuoteField,
+    Side,
+)
 from src.processing.base_dataset import BaseDataset
 from src.processing.base_processor import BaseProcessor
-from src.config.constants import (
-    ORDERBOOK_SCHEMA,
-    ORDERBOOK_DROP_COLS,
-    Side,
-    QuoteField,
-    AggFnType,
-)
 
 
 class OrderBookDataset(BaseDataset):

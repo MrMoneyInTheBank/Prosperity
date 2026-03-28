@@ -5,7 +5,7 @@ import polars as pl
 from src.config import PRODUCTS
 from src.config.constants import ORDERBOOK_FEATURES
 from src.processing.dataset_spec import DatasetSpec
-from src.processing.orderbook import OrderBookDataset, OrderBookDataProcessor
+from src.processing.orderbook import OrderBookDataProcessor, OrderBookDataset
 from src.research.results import AnalysisResult
 
 
