@@ -1,0 +1,13 @@
+TRADERS: t.Final[dict[Product, t.Type[BaseTrader]]] = {Product.EMERALDS: EmeraldTrader}
+
+
+class Trader:
+    def run(self, trading_state: TradingState):
+        result: dict[str, list[Order]] = {}
+
+        for product, trader in TRADERS.items():
+            if product in trading_state.order_depths:
+                trader_instance = trader(product, trading_state)
+                result.update(trader_instance.get_orders())
+
+        return result, 0, ""

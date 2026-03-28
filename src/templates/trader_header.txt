@@ -1,0 +1,14 @@
+from enum import StrEnum
+import typing as t
+from abc import ABC, abstractmethod
+from operator import itemgetter
+
+from datamodel import Order, OrderDepth, TradingState
+
+
+class Product(StrEnum):
+    EMERALDS = "EMERALDS"
+    TOMATOES = "TOMATOES"
+
+
+POS_LIMITS: t.Final[dict[Product, int]] = {Product.EMERALDS: 80, Product.TOMATOES: 80}
