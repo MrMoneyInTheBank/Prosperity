@@ -1,21 +1,27 @@
-from operator import itemgetter
+from enum import StrEnum
 import typing as t
+from abc import ABC, abstractmethod
+from operator import itemgetter
 
-from datamodel import OrderDepth, TradingState, Order
-
-EMERALDS = "EMERALDS"
-
-
-POSITION_LIMIT: t.Final[int] = 80
+from datamodel import Order, OrderDepth, TradingState
 
 
-class EmeraldTrader:
-    def __init__(self, trading_state: TradingState) -> None:
-        self.name = EMERALDS
-        self.orders: list[Order] = []
+class Product(StrEnum):
+    EMERALDS = "EMERALDS"
+    TOMATOES = "TOMATOES"
+
+
+POS_LIMITS: t.Final[dict[Product, int]] = {Product.EMERALDS: 80, Product.TOMATOES: 80}
+
+
+class BaseTrader(ABC):
+    def __init__(self, product: Product, trading_state: TradingState) -> None:
+        self.product = product
         self.trading_state = trading_state
-        self.position_limit = POSITION_LIMIT
-        self.initial_position = self.trading_state.position.get(self.name, 0)
+
+        self.orders: list[Order] = []
+        self.position_limit = POS_LIMITS[self.product]
+        self.initial_position = self.trading_state.position.get(self.product, 0)
         self.buy_orders, self.sell_orders = self.get_order_depths()
         self.best_bid, self.best_ask = self.get_best_quotes()
         self.buy_anchor, self.ask_anchor, self.mid_anchor = self.get_order_anchors()
@@ -24,7 +30,7 @@ class EmeraldTrader:
         )
 
     def get_order_depths(self) -> tuple[dict[int, int], dict[int, int]]:
-        order_depth: OrderDepth = self.trading_state.order_depths[self.name]
+        order_depth: OrderDepth = self.trading_state.order_depths[self.product]
         buy_orders = {
             bid_price: abs(bid_vol)
             for bid_price, bid_vol in sorted(
@@ -66,15 +72,24 @@ class EmeraldTrader:
 
     def bid(self, price, volume) -> None:
         abs_volume = min(abs(int(volume)), self.max_allowed_buy_volume)
-        order = Order(self.name, int(price), abs_volume)
+        order = Order(self.product, int(price), abs_volume)
         self.max_allowed_buy_volume -= abs_volume
         self.orders.append(order)
 
     def ask(self, price, volume) -> None:
         abs_volume = min(abs(int(volume)), self.max_allowed_sell_volume)
-        order = Order(self.name, int(price), -abs_volume)
+        order = Order(self.product, int(price), -abs_volume)
         self.max_allowed_sell_volume -= abs_volume
         self.orders.append(order)
+
+    @abstractmethod
+    def get_orders(self) -> dict[str, list[Order]]:
+        pass
+
+
+class EmeraldTrader(BaseTrader):
+    def __init__(self, product: Product, trading_state: TradingState) -> None:
+        super().__init__(product, trading_state)
 
     def get_orders(self) -> dict[str, list[Order]]:
         # pure arbitrage
@@ -114,16 +129,19 @@ class EmeraldTrader:
         self.bid(make_bid, self.max_allowed_buy_volume)
         self.ask(make_ask, self.max_allowed_sell_volume)
 
-        return {self.name: self.orders}
+        return {self.product: self.orders}
+
+
+TRADERS: t.Final[dict[Product, t.Type[BaseTrader]]] = {Product.EMERALDS: EmeraldTrader}
 
 
 class Trader:
     def run(self, trading_state: TradingState):
         result: dict[str, list[Order]] = {}
 
-        if EMERALDS in trading_state.order_depths:
-            trader = EmeraldTrader(trading_state)
-
-            result.update(trader.get_orders())
+        for product, trader in TRADERS.items():
+            if product in trading_state.order_depths:
+                trader_instance = trader(product, trading_state)
+                result.update(trader_instance.get_orders())
 
         return result, 0, ""
