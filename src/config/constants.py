@@ -15,17 +15,36 @@ SchemaType = dict[str, type[pl.DataType]]
 
 ### CONSTANTS
 
-# Paths
+## Paths
+
+# Directories
 ROOT_DIR: t.Final[Path] = find_project_root(Path(__file__).resolve())
 DATA_DIR: t.Final[Path] = ROOT_DIR / "data"
+SRC_DIR: t.Final[Path] = ROOT_DIR / "src"
+TEMPLATES_DIR: t.Final[Path] = SRC_DIR / "templates"
 TRADERS_DIR: t.Final[Path] = ROOT_DIR / "src" / "traders"
 PRODUCT_TRADERS_DIR: t.Final[Path] = TRADERS_DIR / "product_traders"
+
+
+# Files
+TRADER_HEADER_FILE: t.Final[Path] = TEMPLATES_DIR / "trader_header.txt"
+TRADER_FOOTER_FILE: t.Final[Path] = TEMPLATES_DIR / "trader_footer.txt"
 TRADER_FILE: t.Final[Path] = TRADERS_DIR / "trader.py"
 
 
 # Products
 EMERALDS: t.Final[str] = "EMERALDS"
 TOMATOES: t.Final[str] = "TOMATOES"
+
+
+class Product(StrEnum):
+    EMERALDS = "EMERALDS"
+    TOMATOES = "TOMATOES"
+
+
+# Position limits
+
+POS_LIMITS: t.Final[dict[Product, int]] = {Product.EMERALDS: 80, Product.TOMATOES: 80}
 
 
 # Orderbook
