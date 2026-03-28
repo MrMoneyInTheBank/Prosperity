@@ -6,7 +6,7 @@ from pathlib import Path
 import polars as pl
 import polars.type_aliases as pt
 
-from src.utils.find_root import find_project_root
+from src.utils import find_project_root
 
 ### TYPES
 
