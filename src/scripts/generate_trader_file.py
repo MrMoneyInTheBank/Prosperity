@@ -113,8 +113,12 @@ def format_content(content: str) -> str:
 def should_generate_file(content: str, trader_file_path: Path) -> bool:
     if not trader_file_path.exists():
         return True
+    
+    def normalize(content: str) -> str:
+        lines = content.splitlines()
+        return "\n".join(lines[4:])
 
-    return trader_file_path.read_text() != content
+    return normalize(trader_file_path.read_text()) != normalize(content)
 
 
 def write_to_file(content: str, filepath: Path) -> None:
