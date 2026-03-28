@@ -1,0 +1,79 @@
+import typing as t
+from abc import ABC, abstractmethod
+from operator import itemgetter
+
+from datamodel import Order, OrderDepth, TradingState
+from src.config.constants import POS_LIMITS, Product
+
+
+class BaseTrader(ABC):
+    def __init__(self, product: Product, trading_state: TradingState) -> None:
+        self.product = product
+        self.trading_state = trading_state
+
+        self.orders: list[Order] = []
+        self.position_limit = POS_LIMITS[self.product]
+        self.initial_position = self.trading_state.position.get(self.product, 0)
+        self.buy_orders, self.sell_orders = self.get_order_depths()
+        self.best_bid, self.best_ask = self.get_best_quotes()
+        self.buy_anchor, self.ask_anchor, self.mid_anchor = self.get_order_anchors()
+        self.max_allowed_buy_volume, self.max_allowed_sell_volume = (
+            self.get_max_allowed_volume()
+        )
+
+    def get_order_depths(self) -> tuple[dict[int, int], dict[int, int]]:
+        order_depth: OrderDepth = self.trading_state.order_depths[self.product]
+        buy_orders = {
+            bid_price: abs(bid_vol)
+            for bid_price, bid_vol in sorted(
+                order_depth.buy_orders.items(), key=itemgetter(0), reverse=True
+            )
+        }
+        sell_orders = {
+            ask_price: abs(ask_vol)
+            for ask_price, ask_vol in sorted(
+                order_depth.sell_orders.items(), key=itemgetter(0)
+            )
+        }
+
+        return buy_orders, sell_orders
+
+    def get_best_quotes(self) -> tuple[t.Optional[int], t.Optional[int]]:
+        best_bid = max(self.buy_orders) if self.buy_orders else None
+        best_ask = min(self.sell_orders) if self.sell_orders else None
+
+        return best_bid, best_ask
+
+    def get_order_anchors(self) -> tuple[int, int, int]:
+        buy_anchor = min(self.buy_orders.keys())
+        ask_anchor = max(self.sell_orders.keys())
+        mid_anchor = (buy_anchor + ask_anchor) // 2
+
+        return buy_anchor, ask_anchor, mid_anchor
+
+    def get_max_allowed_volume(self):
+        max_allowed_buy_volume = self.position_limit - self.initial_position
+        max_allowed_sell_volume = self.position_limit + self.initial_position
+        return max_allowed_buy_volume, max_allowed_sell_volume
+
+    def get_market_bid_ask_vol(self) -> tuple[int, int]:
+        bid_vol = sum(self.buy_orders.values())
+        ask_vol = sum(self.sell_orders.values())
+
+        return bid_vol, ask_vol
+
+    def bid(self, price, volume) -> None:
+        abs_volume = min(abs(int(volume)), self.max_allowed_buy_volume)
+        order = Order(self.product, int(price), abs_volume)
+        self.max_allowed_buy_volume -= abs_volume
+        self.orders.append(order)
+
+    def ask(self, price, volume) -> None:
+        abs_volume = min(abs(int(volume)), self.max_allowed_sell_volume)
+        order = Order(self.product, int(price), -abs_volume)
+        self.max_allowed_sell_volume -= abs_volume
+        self.orders.append(order)
+
+    @abstractmethod
+    def get_orders(self) -> dict[str, list[Order]]:
+        pass
