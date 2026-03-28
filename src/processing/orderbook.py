@@ -4,7 +4,7 @@ import polars as pl
 
 from src.processing.base_dataset import BaseDataset
 from src.processing.base_processor import BaseProcessor
-from src.processing.constants import (
+from src.config.constants import (
     ORDERBOOK_SCHEMA,
     ORDERBOOK_DROP_COLS,
     Side,

@@ -2,7 +2,7 @@ import polars as pl
 
 from src.processing.base_dataset import BaseDataset
 from src.processing.base_processor import BaseProcessor
-from src.processing.constants import TRADES_SCHEMA, TRADES_DROP_COLS
+from src.config.constants import TRADES_SCHEMA, TRADES_DROP_COLS
 
 
 class TradesDataset(BaseDataset):
