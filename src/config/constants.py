@@ -15,9 +15,13 @@ SchemaType = dict[str, type[pl.DataType]]
 
 ### CONSTANTS
 
-# Data locations
+# Paths
 ROOT_DIR: t.Final[Path] = find_project_root(Path(__file__).resolve())
 DATA_DIR: t.Final[Path] = ROOT_DIR / "data"
+TRADERS_DIR: t.Final[Path] = ROOT_DIR / "src" / "traders"
+PRODUCT_TRADERS_DIR: t.Final[Path] = TRADERS_DIR / "product_traders"
+TRADER_FILE: t.Final[Path] = TRADERS_DIR / "trader.py"
+
 
 # Products
 EMERALDS: t.Final[str] = "EMERALDS"
