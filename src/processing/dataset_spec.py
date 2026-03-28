@@ -1,7 +1,8 @@
-from pathlib import Path
 from dataclasses import dataclass
+from pathlib import Path
 
-from src.notebooks.constants import DATA_DIR
+from src.config.constants import DATA_DIR
+
 
 @dataclass(frozen=True)
 class DatasetSpec:
@@ -19,7 +20,13 @@ class DatasetSpec:
             raise FileNotFoundError(f"Trades file not found: {trades_path}")
 
     def prices(self) -> Path:
-        return DATA_DIR / f"round-{self.round_number}/day_{self.day}/prices_round_{self.round_number}_day_{self.day}.csv"
+        return (
+            DATA_DIR
+            / f"round-{self.round_number}/day_{self.day}/prices_round_{self.round_number}_day_{self.day}.csv"
+        )
 
     def trades(self) -> Path:
-        return DATA_DIR / f"round-{self.round_number}/day_{self.day}/trades_round_{self.round_number}_day_{self.day}.csv"
+        return (
+            DATA_DIR
+            / f"round-{self.round_number}/day_{self.day}/trades_round_{self.round_number}_day_{self.day}.csv"
+        )
