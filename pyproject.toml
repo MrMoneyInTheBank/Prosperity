@@ -11,6 +11,9 @@ dependencies = [
     "polars>=1.39.2",
 ]
 
+[project.scripts]
+gen-trader = "src.scripts.generate_trader_file:main"
+
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
