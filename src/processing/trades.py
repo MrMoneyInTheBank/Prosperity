@@ -1,6 +1,12 @@
 import polars as pl
 
-from src.config.constants import TRADES_DROP_COLS, TRADES_SCHEMA
+from src.config.constants import (
+    Order,
+    TRADES_DROP_COLS,
+    TRADES_SCHEMA,
+    TRADES_ORDERBOOK_JOIN_COLS,
+    TRADES_ORDERBOOK_JOIN_RENAMES,
+)
 from src.processing.base_dataset import BaseDataset
 from src.processing.base_processor import BaseProcessor
 
@@ -62,6 +68,25 @@ class TradesDataProcessor(BaseProcessor):
         self._data = self._data.with_columns(
             (pl.col("price") - pl.col("mid_price")).alias("mid_price_dev")
         )
+        return self
+
+    def add_buy_sell_heuristic(self) -> "TradesDataProcessor":
+        if not self._orderbook_joined:
+            print("Join data from orderbook first to add price features.")
+            return self
+
+        bid_dist = (pl.col("price") - pl.col("best_bid")).abs()
+        ask_dist = (pl.col("price") - pl.col("best_ask")).abs()
+
+        self._data = self._data.with_columns(
+            pl.when(bid_dist < ask_dist)
+            .then(pl.lit(Order.SELL_ORDER))
+            .when(bid_dist > ask_dist)
+            .then(pl.lit(Order.BUY_ORDER))
+            .otherwise(pl.lit(Order.UNKNOWN))
+            .alias("side_heur")
+        )
+
         return self
 
     def build(self) -> pl.DataFrame:

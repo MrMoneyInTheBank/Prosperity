@@ -89,6 +89,12 @@ ORDERBOOK_FEATURES: t.Final[list[str]] = [
 ORDERBOOK_LEVELS: t.Final[int] = 3
 
 # Trades
+
+class Order(StrEnum):
+    BUY_ORDER = "BUY_ORDER"
+    SELL_ORDER = "SELL_ORDER"
+    UNKNOWN = "UNKNOWN"
+
 TRADES_SCHEMA: t.Final[SchemaType] = {
     "timestamp": pl.Int64,
     "buyer": pl.String,
@@ -100,3 +106,13 @@ TRADES_SCHEMA: t.Final[SchemaType] = {
 }
 
 TRADES_DROP_COLS: t.Final[list[str]] = ["buyer", "seller", "symbol", "currency"]
+TRADES_ORDERBOOK_JOIN_COLS: t.Final[list[str]] = [
+    "timestamp",
+    "bid_price_1",
+    "ask_price_1",
+    "mid_price",
+]
+TRADES_ORDERBOOK_JOIN_RENAMES: t.Final[dict[str, str]] = {
+    "bid_price_1": "best_bid",
+    "ask_price_1": "best_ask",
+}
