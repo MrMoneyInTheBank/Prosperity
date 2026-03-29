@@ -44,7 +44,7 @@ def analyse_trade_quantities(quantities_data: pl.DataFrame) -> pl.DataFrame:
         [
             pl.col("quantity").mean().alias("qty_mean"),
             pl.col("quantity").median().alias("qty_median"),
-            pl.col("quantity").mode().arr.first().alias("qty_mode"),
+            pl.col("quantity").mode().first().alias("qty_mode"),
             pl.col("quantity").var().alias("qty_var"),
             pl.col("quantity").std().alias("qty_std"),
         ]
