@@ -7,10 +7,10 @@ from pathlib import Path
 
 from src.config.constants import (
     PRODUCT_TRADERS_DIR,
-    TRADERS_HISTORY_DIR,
     TRADER_FILE,
     TRADER_FOOTER_FILE,
     TRADER_HEADER_FILE,
+    TRADERS_HISTORY_DIR,
 )
 
 IMPORT_RE: t.Final[re.Pattern[str]] = re.compile(
@@ -113,7 +113,7 @@ def format_content(content: str) -> str:
 def should_generate_file(content: str, trader_file_path: Path) -> bool:
     if not trader_file_path.exists():
         return True
-    
+
     def normalize(content: str) -> str:
         lines = content.splitlines()
         return "\n".join(lines[4:])
