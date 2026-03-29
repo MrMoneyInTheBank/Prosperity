@@ -9,16 +9,14 @@ from src.processing.trades import TradesDataProcessor
 from src.research.results import Plot, Plots, TradesAnalysisResult
 
 
-def plot_time_interval_histogram(
-    time_interval: NDArray[np.int64], x_title: str
-) -> Plot:
+def plot_histogram(data: NDArray[np.int64], title: str, x_title: str) -> Plot:
     fig, ax = plt.subplots()
-    ax.hist(time_interval)
+    ax.hist(data)
     ax.set_yscale("log")
 
     ax.set_xlabel(x_title)
-    ax.set_ylabel("Frequency")
-    ax.set_title("Inter-arrival Time Distribution")
+    ax.set_ylabel("Frequency (log)")
+    ax.set_title(title)
 
     plt.close(fig)
 
@@ -53,11 +51,16 @@ def run_trades_analysis(
     )
 
     time_intervals_stats = analyse_time_intervals(trades_data)
-    time_interval_prev_plot = plot_time_interval_histogram(
-        trades_data["time_since_prev_trade"].to_numpy(), "Time since previous trade"
+
+    time_interval_prev_plot = plot_histogram(
+        data=trades_data["time_since_prev_trade"].to_numpy(),
+        title="Inter-arrival Time Distribution",
+        x_title="Time since previous trade",
     )
-    time_interval_next_plot = plot_time_interval_histogram(
-        trades_data["time_until_next_trade"].to_numpy(), "Time until next trade"
+    time_interval_next_plot = plot_histogram(
+        data=trades_data["time_until_next_trade"].to_numpy(),
+        title="Inter-arrival Time Distribution",
+        x_title="Time until next trade",
     )
 
     plots = Plots(
