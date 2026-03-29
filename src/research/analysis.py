@@ -59,7 +59,9 @@ def run_orderbook_analysis(
 
 
 def run_trades_analysis(raw_trades_data: TradesDataProcessor) -> TradesAnalysisResult:
-    trades_data: t.Final[pl.DataFrame] = raw_trades_data.clean().build()
+    trades_data: t.Final[pl.DataFrame] = (
+        raw_trades_data.clean().add_time_features().build()
+    )
 
     return TradesAnalysisResult(
         raw_trades_data=raw_trades_data, trades_data=trades_data
@@ -82,7 +84,5 @@ def run_analysis(round: int, day: int, product: str) -> AnalysisResult:
     orderbook_analysis: OrderbookAnalysisResult = run_orderbook_analysis(
         raw_orderbook_data
     )
-    trades_analysis: TradesAnalysisResult = run_trades_analysis(
-        raw_trades_data
-    )
+    trades_analysis: TradesAnalysisResult = run_trades_analysis(raw_trades_data)
     return AnalysisResult(orderbook_analysis, trades_analysis)

@@ -26,5 +26,18 @@ class TradesDataProcessor(BaseProcessor):
         self._data = self._data.drop(TRADES_DROP_COLS)
         return self
 
+    def add_time_features(self) -> "TradesDataProcessor":
+        self._data = self._data.with_columns(
+            (pl.col("timestamp") - pl.col("timestamp").shift(1)).alias(
+                "time_since_prev_trade"
+            )
+        ).with_columns(
+            (pl.col("timestamp").shift(-1) - pl.col("timestamp")).alias(
+                "time_until_next_trade"
+            )
+        )
+
+        return self
+
     def build(self) -> pl.DataFrame:
         return self._data
