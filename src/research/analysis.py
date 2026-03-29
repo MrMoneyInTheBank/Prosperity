@@ -1,6 +1,5 @@
 import typing as t
 
-import polars as pl
 
 from src.config.constants import Product
 from src.processing.dataset_spec import DatasetSpec
