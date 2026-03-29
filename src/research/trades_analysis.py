@@ -1,9 +1,43 @@
 import typing as t
 
+import matplotlib.pyplot as plt
+import numpy as np
 import polars as pl
+from numpy.typing import NDArray
 
 from src.processing.trades import TradesDataProcessor
-from src.research.results import TradesAnalysisResult
+from src.research.results import Plot, Plots, TradesAnalysisResult
+
+
+def plot_time_interval_histogram(
+    time_interval: NDArray[np.int64], x_title: str
+) -> Plot:
+    fig, ax = plt.subplots()
+    ax.hist(time_interval)
+    ax.set_yscale("log")
+
+    ax.set_xlabel(x_title)
+    ax.set_ylabel("Frequency")
+    ax.set_title("Inter-arrival Time Distribution")
+
+    plt.close(fig)
+
+    return fig, ax
+
+
+def analyse_time_intervals(trades_data: pl.DataFrame) -> pl.DataFrame:
+    time_interval_stats: pl.DataFrame = trades_data.select(
+        [
+            pl.col("time_since_prev_trade").mean().alias("time_since_prev_mean"),
+            pl.col("time_since_prev_trade").var().alias("time_since_prev_var"),
+            pl.col("time_since_prev_trade").std().alias("time_since_prev_std"),
+            pl.col("time_until_next_trade").mean().alias("time_until_next_mean"),
+            pl.col("time_until_next_trade").var().alias("time_until_next_var"),
+            pl.col("time_until_next_trade").std().alias("time_until_next_std"),
+        ]
+    )
+
+    return time_interval_stats
 
 
 def run_trades_analysis(
@@ -18,6 +52,22 @@ def run_trades_analysis(
         .build()
     )
 
+    time_intervals_stats = analyse_time_intervals(trades_data)
+    time_interval_prev_plot = plot_time_interval_histogram(
+        trades_data["time_since_prev_trade"].to_numpy(), "Time since previous trade"
+    )
+    time_interval_next_plot = plot_time_interval_histogram(
+        trades_data["time_until_next_trade"].to_numpy(), "Time until next trade"
+    )
+
+    plots = Plots(
+        time_interval_until_plt=time_interval_prev_plot,
+        time_interval_next_plt=time_interval_next_plot,
+    )
+
     return TradesAnalysisResult(
-        raw_trades_data=raw_trades_data, trades_data=trades_data
+        raw_trades_data=raw_trades_data,
+        trades_data=trades_data,
+        time_interval_stats=time_intervals_stats,
+        plots=plots,
     )
