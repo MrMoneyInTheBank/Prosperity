@@ -21,6 +21,7 @@ class TradesDataProcessor(BaseProcessor):
     def __init__(self, raw_data: pl.DataFrame, product: str) -> None:
         self._data = raw_data
         self.product = product
+        self._orderbook_joined = False
 
     def clean(self) -> "TradesDataProcessor":
         self._data = self._data.drop(TRADES_DROP_COLS)
@@ -36,6 +37,20 @@ class TradesDataProcessor(BaseProcessor):
                 "time_until_next_trade"
             )
         )
+
+        return self
+
+    def join_select_orderbook_data(
+        self, orderbook_data: pl.DataFrame
+    ) -> "TradesDataProcessor":
+        self._data = self._data.join(
+            other=orderbook_data.select(TRADES_ORDERBOOK_JOIN_COLS).rename(
+                TRADES_ORDERBOOK_JOIN_RENAMES
+            ),
+            on="timestamp",
+            how="left",
+        )
+        self._orderbook_joined = True
 
         return self
 
