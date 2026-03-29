@@ -1,13 +1,14 @@
 from dataclasses import dataclass, fields
 
-import matplotlib.pyplot as plt
+from matplotlib.axes import Axes
+from matplotlib.figure import Figure
 import polars as pl
 
 from src.processing.orderbook import OrderBookDataProcessor
 from src.processing.trades import TradesDataProcessor
 
 
-type Plot = tuple[plt.Figure, plt.Axes]
+type Plot = tuple[Figure, Axes]
 
 
 @dataclass(frozen=True)
