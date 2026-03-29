@@ -8,6 +8,11 @@ import polars.type_aliases as pt
 
 from src.utils import find_project_root
 
+### GENERAL
+
+TOML_FILE_NAME: t.Final[str] = "pyproject.toml"
+GIT_DIR_NAME: t.Final[str] = ".git"
+
 ### TYPES
 
 AggFnType = c.Callable[[c.Iterable[pt.IntoExpr]], pl.Expr]
