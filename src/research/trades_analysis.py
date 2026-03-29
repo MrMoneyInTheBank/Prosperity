@@ -23,8 +23,8 @@ def plot_histogram(data: NDArray[np.int64], title: str, x_title: str) -> Plot:
     return fig, ax
 
 
-def analyse_time_intervals(trades_data: pl.DataFrame) -> pl.DataFrame:
-    time_interval_stats: pl.DataFrame = trades_data.select(
+def analyse_time_intervals(time_interval_data: pl.DataFrame) -> pl.DataFrame:
+    time_interval_stats: pl.DataFrame = time_interval_data.select(
         [
             pl.col("time_since_prev_trade").mean().alias("time_since_prev_mean"),
             pl.col("time_since_prev_trade").var().alias("time_since_prev_var"),
@@ -50,7 +50,9 @@ def run_trades_analysis(
         .build()
     )
 
-    time_intervals_stats = analyse_time_intervals(trades_data)
+    time_intervals_stats = analyse_time_intervals(
+        trades_data.select(["time_since_prev_trade", "time_until_next_trade"])
+    )
 
     time_interval_prev_plot = plot_histogram(
         data=trades_data["time_since_prev_trade"].to_numpy(),
