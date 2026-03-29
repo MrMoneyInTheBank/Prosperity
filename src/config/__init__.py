@@ -1,3 +1,3 @@
-from src.config.constants import EMERALDS, TOMATOES
+from src.config.constants import Product
 
-PRODUCTS: frozenset[str] = frozenset({EMERALDS, TOMATOES})
+PRODUCTS: frozenset[str] = frozenset(p for p in Product)

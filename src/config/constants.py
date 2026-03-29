@@ -33,11 +33,6 @@ TRADER_FOOTER_FILE: t.Final[Path] = TEMPLATES_DIR / "trader_footer.txt"
 TRADER_FILE: t.Final[Path] = TRADERS_DIR / "trader.py"
 
 
-# Products (change to str enum in future)
-EMERALDS: t.Final[str] = "EMERALDS"
-TOMATOES: t.Final[str] = "TOMATOES"
-
-
 class Product(StrEnum):
     EMERALDS = "EMERALDS"
     TOMATOES = "TOMATOES"
