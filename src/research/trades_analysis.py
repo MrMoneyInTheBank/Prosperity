@@ -5,6 +5,7 @@ import numpy as np
 import polars as pl
 from numpy.typing import NDArray
 
+from src.config.constants import Order
 from src.processing.trades import TradesDataProcessor
 from src.research.results import Plot, Plots, TradesAnalysisResult
 
@@ -52,6 +53,19 @@ def analyse_trade_quantities(quantities_data: pl.DataFrame) -> pl.DataFrame:
     return quantities_stats
 
 
+def analyse_trade_orders(orders_data: pl.DataFrame) -> pl.DataFrame:
+    total_orders, _ = orders_data.shape
+    buy_orders = (orders_data["side_heur"] == Order.BUY_ORDER).sum()
+    sell_orders = (orders_data["side_heur"] == Order.SELL_ORDER).sum()
+
+    buy_order_rate = buy_orders / total_orders
+    sell_order_rate = sell_orders / total_orders
+
+    return pl.DataFrame(
+        {"buy_order_rate": buy_order_rate, "sell_order_rate": sell_order_rate}
+    )
+
+
 def run_trades_analysis(
     raw_trades_data: TradesDataProcessor, orderbook_data: pl.DataFrame
 ) -> TradesAnalysisResult:
@@ -68,6 +82,7 @@ def run_trades_analysis(
         trades_data.select(["time_since_prev_trade", "time_until_next_trade"])
     )
     quantities_stats = analyse_trade_quantities(trades_data.select("quantity"))
+    order_side_stats = analyse_trade_orders(trades_data.select(["side_heur"]))
 
     time_interval_prev_plot = plot_histogram(
         data=trades_data["time_since_prev_trade"].to_numpy(),
@@ -96,5 +111,6 @@ def run_trades_analysis(
         trades_data=trades_data,
         time_interval_stats=time_intervals_stats,
         quantities_stats=quantities_stats,
+        order_side_stats=order_side_stats,
         plots=plots,
     )
