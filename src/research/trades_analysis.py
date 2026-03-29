@@ -64,7 +64,13 @@ def analyse_trade_orders(orders_data: pl.DataFrame) -> pl.DataFrame:
     sell_order_rate: t.Final[float] = sell_orders / total_orders
 
     return pl.DataFrame(
-        {"buy_order_rate": buy_order_rate, "sell_order_rate": sell_order_rate}
+        {
+            "total_orders": total_orders,
+            "buy_orders": buy_orders,
+            "buy_order_rate": buy_order_rate,
+            "sell_orders": sell_orders,
+            "sell_order_rate": sell_order_rate,
+        }
     )
 
 
