@@ -2,16 +2,15 @@ import typing as t
 
 import polars as pl
 
-from src.config import PRODUCTS
-from src.config.constants import ORDERBOOK_FEATURES
+from src.config.constants import ORDERBOOK_FEATURES, Product
 from src.processing.dataset_spec import DatasetSpec
 from src.processing.orderbook import OrderBookDataProcessor, OrderBookDataset
 from src.research.results import AnalysisResult
 
 
 def run_analysis(round: int, day: int, product: str) -> AnalysisResult:
-    if product not in PRODUCTS:
-        raise KeyError(f"Product {product} not found in {PRODUCTS}")
+    if product not in Product:
+        raise KeyError(f"Product {product} not found in {Product._member_names_}")
 
     dataset: t.Final[DatasetSpec] = DatasetSpec(round_number=round, day=day)
 
