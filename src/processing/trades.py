@@ -54,5 +54,15 @@ class TradesDataProcessor(BaseProcessor):
 
         return self
 
+    def add_price_features(self) -> "TradesDataProcessor":
+        if not self._orderbook_joined:
+            print("Join data from orderbook first to add price features.")
+            return self
+
+        self._data = self._data.with_columns(
+            (pl.col("price") - pl.col("mid_price")).alias("mid_price_dev")
+        )
+        return self
+
     def build(self) -> pl.DataFrame:
         return self._data
