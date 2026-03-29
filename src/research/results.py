@@ -25,6 +25,7 @@ class Plots:
     time_interval_until_plt: Plot
     time_interval_next_plt: Plot
     quantities_plt: Plot
+    streaks_plt: Plot
 
 
 def display_plots(plots: Plots) -> None:

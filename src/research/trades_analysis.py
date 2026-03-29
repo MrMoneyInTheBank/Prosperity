@@ -134,11 +134,17 @@ def run_trades_analysis(
         title="Trade quantities distribution",
         x_title="Trade quantity",
     )
+    streaks_plot: t.Final[Plot] = plot_histogram(
+        data=trade_price_streaks_stats["streak_length"].to_numpy(),
+        title="Trade price streak distribution",
+        x_title="Streak length",
+    )
 
     plots: t.Final[Plots] = Plots(
         time_interval_until_plt=time_interval_prev_plot,
         time_interval_next_plt=time_interval_next_plot,
         quantities_plt=quantities_plot,
+        streaks_plt=streaks_plot,
     )
 
     return TradesAnalysisResult(
