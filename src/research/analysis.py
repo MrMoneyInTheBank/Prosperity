@@ -2,77 +2,17 @@ import typing as t
 
 import polars as pl
 
-from src.config.constants import ORDERBOOK_FEATURES, Product
+from src.config.constants import Product
 from src.processing.dataset_spec import DatasetSpec
 from src.processing.orderbook import OrderBookDataProcessor, OrderBookDataset
 from src.processing.trades import TradesDataProcessor, TradesDataset
+from src.research.orderbook_analysis import run_orderbook_analysis
+from src.research.trades_analysis import run_trades_analysis
 from src.research.results import (
     AnalysisResult,
     OrderbookAnalysisResult,
     TradesAnalysisResult,
 )
-
-
-def run_orderbook_analysis(
-    raw_orderbook_data: OrderBookDataProcessor,
-) -> OrderbookAnalysisResult:
-    orderbook_data: t.Final[pl.DataFrame] = (
-        raw_orderbook_data.clean()
-        .add_microstructure_features()
-        .add_price_features()
-        .add_depth_features()
-        .build()
-    )
-
-    orderbook_features_data: t.Final[pl.DataFrame] = orderbook_data.select(
-        ["timestamp", *ORDERBOOK_FEATURES]
-    )
-
-    orderbook_stats: t.Final[pl.DataFrame] = orderbook_features_data.select(
-        [
-            pl.col("mid_price").mean().alias("mid_mean"),
-            pl.col("mid_price").var().alias("mid_var"),
-            pl.col("mid_price").std().alias("mid_std"),
-            pl.col("microprice").mean().alias("micro_mean"),
-            pl.col("microprice").var().alias("micro_var"),
-            pl.col("microprice").std().alias("micro_std"),
-            pl.col("log_returns").mean().alias("ret_mean"),
-            pl.col("log_returns").var().alias("ret_var"),
-            pl.col("log_returns").std().alias("ret_std"),
-        ]
-    )
-
-    orderbook_corrs: t.Final[pl.DataFrame] = orderbook_features_data.select(
-        [
-            pl.corr("imbalance", "future_log_returns").alias("imb_corr"),
-            pl.corr("microprice_dev", "future_log_returns").alias("micro_corr"),
-        ]
-    )
-
-    return OrderbookAnalysisResult(
-        raw_orderbook_data=raw_orderbook_data,
-        orderbook_data=orderbook_data,
-        orderbook_features_data=orderbook_features_data,
-        orderbook_stats=orderbook_stats,
-        orderbook_corrs=orderbook_corrs,
-    )
-
-
-def run_trades_analysis(
-    raw_trades_data: TradesDataProcessor, orderbook_data: pl.DataFrame
-) -> TradesAnalysisResult:
-    trades_data: t.Final[pl.DataFrame] = (
-        raw_trades_data.clean()
-        .join_select_orderbook_data(orderbook_data)
-        .add_time_features()
-        .add_price_features()
-        .add_buy_sell_heuristic()
-        .build()
-    )
-
-    return TradesAnalysisResult(
-        raw_trades_data=raw_trades_data, trades_data=trades_data
-    )
 
 
 def run_analysis(round: int, day: int, product: str) -> AnalysisResult:
