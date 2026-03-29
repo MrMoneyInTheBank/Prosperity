@@ -24,6 +24,7 @@ class OrderbookAnalysisResult:
 class Plots:
     time_interval_until_plt: Plot
     time_interval_next_plt: Plot
+    quantities_plt: Plot
 
 
 def display_plots(plots: Plots) -> None:
@@ -37,8 +38,10 @@ def display_plots(plots: Plots) -> None:
 @dataclass(frozen=True)
 class TradesAnalysisResult:
     raw_trades_data: TradesDataProcessor
-    trades_data: pl.DataFrame  # flesh this out later
+    trades_data: pl.DataFrame
     time_interval_stats: pl.DataFrame
+    quantities_stats: pl.DataFrame
+    order_side_stats: pl.DataFrame
     plots: Plots
 
 
