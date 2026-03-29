@@ -25,7 +25,7 @@ def plot_histogram(data: NDArray[np.int64], title: str, x_title: str) -> Plot:
 
 
 def analyse_time_intervals(time_interval_data: pl.DataFrame) -> pl.DataFrame:
-    time_interval_stats: pl.DataFrame = time_interval_data.select(
+    time_interval_stats: t.Final[pl.DataFrame] = time_interval_data.select(
         [
             pl.col("time_since_prev_trade").mean().alias("time_since_prev_mean"),
             pl.col("time_since_prev_trade").var().alias("time_since_prev_var"),
@@ -40,7 +40,7 @@ def analyse_time_intervals(time_interval_data: pl.DataFrame) -> pl.DataFrame:
 
 
 def analyse_trade_quantities(quantities_data: pl.DataFrame) -> pl.DataFrame:
-    quantities_stats: pl.DataFrame = quantities_data.select(
+    quantities_stats: t.Final[pl.DataFrame] = quantities_data.select(
         [
             pl.col("quantity").mean().alias("qty_mean"),
             pl.col("quantity").median().alias("qty_median"),
@@ -55,11 +55,13 @@ def analyse_trade_quantities(quantities_data: pl.DataFrame) -> pl.DataFrame:
 
 def analyse_trade_orders(orders_data: pl.DataFrame) -> pl.DataFrame:
     total_orders, _ = orders_data.shape
-    buy_orders = (orders_data["side_heur"] == Order.BUY_ORDER).sum()
-    sell_orders = (orders_data["side_heur"] == Order.SELL_ORDER).sum()
+    buy_orders: t.Final[int] = int((orders_data["side_heur"] == Order.BUY_ORDER).sum())
+    sell_orders: t.Final[int] = int(
+        (orders_data["side_heur"] == Order.SELL_ORDER).sum()
+    )
 
-    buy_order_rate = buy_orders / total_orders
-    sell_order_rate = sell_orders / total_orders
+    buy_order_rate: t.Final[float] = buy_orders / total_orders
+    sell_order_rate: t.Final[float] = sell_orders / total_orders
 
     return pl.DataFrame(
         {"buy_order_rate": buy_order_rate, "sell_order_rate": sell_order_rate}
@@ -98,29 +100,36 @@ def run_trades_analysis(
         .build()
     )
 
-    time_intervals_stats = analyse_time_intervals(
+    time_intervals_stats: t.Final[pl.DataFrame] = analyse_time_intervals(
         trades_data.select(["time_since_prev_trade", "time_until_next_trade"])
     )
-    quantities_stats = analyse_trade_quantities(trades_data.select("quantity"))
-    order_side_stats = analyse_trade_orders(trades_data.select(["side_heur"]))
+    quantities_stats: t.Final[pl.DataFrame] = analyse_trade_quantities(
+        trades_data.select("quantity")
+    )
+    order_side_stats: t.Final[pl.DataFrame] = analyse_trade_orders(
+        trades_data.select(["side_heur"])
+    )
+    trade_price_streaks_stats: t.Final[pl.DataFrame] = analyse_trade_price_streaks(
+        trades_data.select(["price"])
+    )
 
-    time_interval_prev_plot = plot_histogram(
+    time_interval_prev_plot: t.Final[Plot] = plot_histogram(
         data=trades_data["time_since_prev_trade"].to_numpy(),
         title="Inter-arrival Time Distribution",
         x_title="Time since previous trade",
     )
-    time_interval_next_plot = plot_histogram(
+    time_interval_next_plot: t.Final[Plot] = plot_histogram(
         data=trades_data["time_until_next_trade"].to_numpy(),
         title="Inter-arrival Time Distribution",
         x_title="Time until next trade",
     )
-    quantities_plot = plot_histogram(
+    quantities_plot: t.Final[Plot] = plot_histogram(
         data=trades_data["quantity"].to_numpy(),
         title="Trade quantities distribution",
         x_title="Trade quantity",
     )
 
-    plots = Plots(
+    plots: t.Final[Plots] = Plots(
         time_interval_until_plt=time_interval_prev_plot,
         time_interval_next_plt=time_interval_next_plot,
         quantities_plt=quantities_plot,

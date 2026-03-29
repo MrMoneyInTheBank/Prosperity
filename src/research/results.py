@@ -42,6 +42,7 @@ class TradesAnalysisResult:
     time_interval_stats: pl.DataFrame
     quantities_stats: pl.DataFrame
     order_side_stats: pl.DataFrame
+    trade_price_streaks_stats: pl.DataFrame
     plots: Plots
 
 
