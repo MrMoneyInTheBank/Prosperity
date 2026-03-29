@@ -99,4 +99,4 @@ TRADES_SCHEMA: t.Final[SchemaType] = {
     "quantity": pl.Int64,
 }
 
-TRADES_DROP_COLS: t.Final[list[str]] = ["buyer", "seller", "currency"]
+TRADES_DROP_COLS: t.Final[list[str]] = ["buyer", "seller", "symbol", "currency"]
