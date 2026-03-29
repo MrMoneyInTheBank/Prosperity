@@ -66,6 +66,26 @@ def analyse_trade_orders(orders_data: pl.DataFrame) -> pl.DataFrame:
     )
 
 
+def analyse_trade_price_streaks(trade_price_data: pl.DataFrame) -> pl.DataFrame:
+    is_new_price: t.Final[pl.Series] = trade_price_data["price"] != trade_price_data[
+        "price"
+    ].shift(1)
+    streak_id: t.Final[pl.Series] = is_new_price.cum_sum()
+    streaks: t.Final[pl.DataFrame] = (
+        trade_price_data.with_columns(streak_id.alias("streak_id"))
+        .group_by("streak_id")
+        .agg(
+            [
+                pl.col("price").first().alias("price"),
+                pl.count().alias("streak_length"),
+            ]
+        )
+        .select(["price", "streak_length"])
+    )
+
+    return streaks
+
+
 def run_trades_analysis(
     raw_trades_data: TradesDataProcessor, orderbook_data: pl.DataFrame
 ) -> TradesAnalysisResult:
@@ -112,5 +132,6 @@ def run_trades_analysis(
         time_interval_stats=time_intervals_stats,
         quantities_stats=quantities_stats,
         order_side_stats=order_side_stats,
+        trade_price_streaks_stats=trade_price_streaks_stats,
         plots=plots,
     )
