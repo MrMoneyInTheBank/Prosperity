@@ -1,11 +1,11 @@
 import polars as pl
 
 from src.config.constants import (
-    Order,
     TRADES_DROP_COLS,
-    TRADES_SCHEMA,
     TRADES_ORDERBOOK_JOIN_COLS,
     TRADES_ORDERBOOK_JOIN_RENAMES,
+    TRADES_SCHEMA,
+    Order,
 )
 from src.processing.base_dataset import BaseDataset
 from src.processing.base_processor import BaseProcessor

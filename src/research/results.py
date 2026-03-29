@@ -14,10 +14,12 @@ class OrderbookAnalysisResult:
     orderbook_stats: pl.DataFrame
     orderbook_corrs: pl.DataFrame
 
+
 @dataclass(frozen=True)
 class TradesAnalysisResult:
     raw_trades_data: TradesDataProcessor
-    trades_data: pl.DataFrame # flesh this out later
+    trades_data: pl.DataFrame  # flesh this out later
+
 
 @dataclass(frozen=True)
 class AnalysisResult:

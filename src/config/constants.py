@@ -90,10 +90,12 @@ ORDERBOOK_LEVELS: t.Final[int] = 3
 
 # Trades
 
+
 class Order(StrEnum):
     BUY_ORDER = "BUY_ORDER"
     SELL_ORDER = "SELL_ORDER"
     UNKNOWN = "UNKNOWN"
+
 
 TRADES_SCHEMA: t.Final[SchemaType] = {
     "timestamp": pl.Int64,
