@@ -38,6 +38,20 @@ def analyse_time_intervals(time_interval_data: pl.DataFrame) -> pl.DataFrame:
     return time_interval_stats
 
 
+def analyse_trade_quantities(quantities_data: pl.DataFrame) -> pl.DataFrame:
+    quantities_stats: pl.DataFrame = quantities_data.select(
+        [
+            pl.col("quantity").mean().alias("qty_mean"),
+            pl.col("quantity").median().alias("qty_median"),
+            pl.col("quantity").mode().arr.first().alias("qty_mode"),
+            pl.col("quantity").var().alias("qty_var"),
+            pl.col("quantity").std().alias("qty_std"),
+        ]
+    )
+
+    return quantities_stats
+
+
 def run_trades_analysis(
     raw_trades_data: TradesDataProcessor, orderbook_data: pl.DataFrame
 ) -> TradesAnalysisResult:
@@ -53,6 +67,7 @@ def run_trades_analysis(
     time_intervals_stats = analyse_time_intervals(
         trades_data.select(["time_since_prev_trade", "time_until_next_trade"])
     )
+    quantities_stats = analyse_trade_quantities(trades_data.select("quantity"))
 
     time_interval_prev_plot = plot_histogram(
         data=trades_data["time_since_prev_trade"].to_numpy(),
@@ -64,15 +79,22 @@ def run_trades_analysis(
         title="Inter-arrival Time Distribution",
         x_title="Time until next trade",
     )
+    quantities_plot = plot_histogram(
+        data=trades_data["quantity"].to_numpy(),
+        title="Trade quantities distribution",
+        x_title="Trade quantity",
+    )
 
     plots = Plots(
         time_interval_until_plt=time_interval_prev_plot,
         time_interval_next_plt=time_interval_next_plot,
+        quantities_plt=quantities_plot,
     )
 
     return TradesAnalysisResult(
         raw_trades_data=raw_trades_data,
         trades_data=trades_data,
         time_interval_stats=time_intervals_stats,
+        quantities_stats=quantities_stats,
         plots=plots,
     )
