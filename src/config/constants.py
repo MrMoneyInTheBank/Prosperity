@@ -22,7 +22,7 @@ ROOT_DIR: t.Final[Path] = find_project_root(Path(__file__).resolve())
 DATA_DIR: t.Final[Path] = ROOT_DIR / "data"
 SRC_DIR: t.Final[Path] = ROOT_DIR / "src"
 TEMPLATES_DIR: t.Final[Path] = SRC_DIR / "templates"
-TRADERS_DIR: t.Final[Path] = ROOT_DIR / "src" / "traders"
+TRADERS_DIR: t.Final[Path] = SRC_DIR / "traders"
 PRODUCT_TRADERS_DIR: t.Final[Path] = TRADERS_DIR / "product_traders"
 TRADERS_HISTORY_DIR: t.Final[Path] = TRADERS_DIR / "history"
 
