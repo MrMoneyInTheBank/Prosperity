@@ -51,6 +51,20 @@ class BaseTrader(ABC):
 
         return buy_anchor, ask_anchor, mid_anchor
 
+    def get_microprice(self) -> t.Optional[float]:
+        if not self.best_bid or not self.best_ask:
+            return None
+
+        bid_vol: int = self.buy_orders[self.best_bid]
+        ask_vol: int = self.sell_orders[self.best_ask]
+        total_vol: int = bid_vol + ask_vol
+
+        cross_weighted_price_sum: int = (self.best_ask * bid_vol) + (
+            self.best_bid * ask_vol
+        )
+
+        return cross_weighted_price_sum / total_vol
+
     def get_max_allowed_volume(self):
         max_allowed_buy_volume = self.position_limit - self.initial_position
         max_allowed_sell_volume = self.position_limit + self.initial_position
