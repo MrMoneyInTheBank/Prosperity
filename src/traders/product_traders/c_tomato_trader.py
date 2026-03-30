@@ -24,21 +24,28 @@ class TomatoTrader(BaseTrader):
         make_bid = int(self.buy_anchor + 1)
         make_ask = int(self.ask_anchor - 1)
 
+        alpha = 0.3
+        fair_price = (
+            self.mid_anchor
+            if (mp := self.get_microprice()) is None
+            else self.mid_anchor + alpha * (mp - self.mid_anchor)
+        )
+
         for bid_price, bid_vol in self.buy_orders.items():
             overbidding_price = bid_price + 1
-            if bid_vol > 1 and overbidding_price < self.mid_anchor:
+            if bid_vol > 1 and overbidding_price < fair_price:
                 make_bid = max(make_bid, overbidding_price)
                 break
-            elif bid_price < self.mid_anchor:
+            elif bid_price < fair_price:
                 make_bid = max(make_bid, bid_price)
                 break
         for sell_price, sell_vol in self.sell_orders.items():
             underbidding_price = sell_price - 1
-            if sell_vol > 1 and underbidding_price > self.mid_anchor:
+            if sell_vol > 1 and underbidding_price > fair_price:
                 make_ask = min(make_ask, underbidding_price)
                 break
-            elif sell_price > self.mid_anchor:
-                ask_price = min(make_ask, sell_price)
+            elif sell_price > fair_price:
+                make_ask = min(make_ask, sell_price)
                 break
 
         self.bid(make_bid, self.max_allowed_buy_volume)
