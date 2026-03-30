@@ -1,17 +1,16 @@
 import typing as t
 
-
 from src.config.constants import Product
 from src.processing.dataset_spec import DatasetSpec
 from src.processing.orderbook import OrderBookDataProcessor, OrderBookDataset
 from src.processing.trades import TradesDataProcessor, TradesDataset
 from src.research.orderbook_analysis import run_orderbook_analysis
-from src.research.trades_analysis import run_trades_analysis
 from src.research.results import (
     AnalysisResult,
     OrderbookAnalysisResult,
     TradesAnalysisResult,
 )
+from src.research.trades_analysis import run_trades_analysis
 
 
 def run_analysis(round: int, day: int, product: str) -> AnalysisResult:
