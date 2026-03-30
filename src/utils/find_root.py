@@ -1,10 +1,10 @@
 import typing as t
 from pathlib import Path
 
-from src.config.constants import GIT_DIR_NAME, TOML_FILE_NAME
-
 
 def find_project_root(start: Path) -> Path:
+    from src.config.constants import GIT_DIR_NAME, TOML_FILE_NAME
+
     for path in [start, *start.parents]:
         if (path / TOML_FILE_NAME).exists() or (path / GIT_DIR_NAME).exists():
             return path
