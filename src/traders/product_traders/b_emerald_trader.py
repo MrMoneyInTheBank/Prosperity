@@ -22,15 +22,16 @@ class EmeraldTrader(BaseTrader):
         assert midprice is not None
 
         fair_price = (midprice + alpha * (microprice - midprice)) + imbalance_adj
+        delta = 1
 
         for ask_price, ask_vol in self.sell_orders.items():
-            if ask_price <= fair_price - 1:
+            if ask_price <= fair_price - delta and microprice > midprice:
                 self.bid(ask_price, ask_vol)
             elif ask_price <= fair_price and self.initial_position < 0:
                 self.bid(ask_price, ask_vol)
 
         for bid_price, bid_vol in self.buy_orders.items():
-            if bid_price >= fair_price + 1:
+            if bid_price >= fair_price + delta and microprice < midprice:
                 self.ask(bid_price, bid_vol)
             elif bid_price >= fair_price and self.initial_position > 0:
                 self.ask(bid_price, bid_vol)
