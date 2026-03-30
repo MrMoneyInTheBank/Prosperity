@@ -1,6 +1,6 @@
 # =========================================
 # Auto-generated code for trader.py
-# Generated on 2026-03-31 02:05:28
+# Generated on 2026-03-31 02:00:07
 # =========================================
 
 import typing as t
@@ -152,15 +152,8 @@ class EmeraldTrader(BaseTrader):
                 self.ask(bid_price, bid_vol)
 
         # market making
-        position = self.initial_position
-        base_spread = 2
-        k = 0.1
-        spread = base_spread + k * abs(position)
-
-        inventory_skew = 0.2 * position
-
-        make_bid = int(fair_price - spread / 2 - inventory_skew)
-        make_ask = int(fair_price + spread / 2 - inventory_skew)
+        make_bid = int(self.buy_anchor + 1)
+        make_ask = int(self.ask_anchor - 1)
 
         for bid_price, bid_vol in self.buy_orders.items():
             overbidding_price = bid_price + 1
