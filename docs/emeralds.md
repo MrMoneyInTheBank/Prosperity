@@ -229,3 +229,179 @@ subject to:
 - price constraints relative to $\tilde{p}_t$
 - order book structure
 - position limits
+
+## 9. Empirical Analysis
+
+### 9.1 Order Book Statistics
+
+From historical order book data:
+
+- **Midprice:**
+  - Mean ≈ 10000  
+  - Variance ≈ 0.51  
+
+- **Microprice:**
+  - Mean ≈ 10000  
+  - Variance ≈ 0.30  
+
+- **Log Returns (midprice):**
+  - Mean ≈ 0  
+  - Variance ≈ 1e-8  
+
+These results indicate that the price process is **extremely stable**, with negligible drift and very low volatility.
+
+---
+
+### 9.2 Signal Analysis
+
+Two microstructure-derived signals were evaluated:
+
+- **Order Book Imbalance:**
+  $$
+  \text{imbalance} = \frac{V^{bid} - V^{ask}}{V^{bid} + V^{ask}}
+  $$
+  Correlation with future returns:
+  $$
+  \text{corr}(\text{imbalance}, r_{t+1}) \approx -0.68
+  $$
+
+- **Microprice Deviation:**
+  $$
+  \Delta_{\mu} = \text{microprice} - \text{midprice}
+  $$
+  Correlation with future returns:
+  $$
+  \text{corr}(\Delta_{\mu}, r_{t+1}) \approx 0.62
+  $$
+
+---
+
+### 9.3 Interpretation
+
+- The near-zero return mean and variance confirm that **no persistent directional trend exists**.
+- Despite strong correlations:
+  - Microprice deviation suggests short-term directional movement.
+  - Imbalance suggests contrarian pressure from liquidity takers.
+- However, these effects are **too small in magnitude** to produce meaningful PnL when executed.
+
+---
+
+## 10. Strategy Iterations
+
+A series of targeted improvements were tested to extract additional edge.
+
+---
+
+### 10.1 Microprice-Adjusted Fair Value
+
+The anchor price was modified:
+
+$$
+\tilde{p}_t = \text{midprice} + \alpha \cdot (\text{microprice} - \text{midprice})
+$$
+
+**Result:**
+- No change in PnL (≈ 1050)
+
+**Conclusion:**
+- Although statistically predictive, the signal does not translate into executable edge.
+
+---
+
+### 10.2 Inventory-Skewed Market Making
+
+Quotes were adjusted based on inventory and imbalance:
+- Inventory-dependent spread widening
+- Directional skew of quotes
+
+**Result:**
+- Significant degradation in PnL (≈ 204)
+
+**Conclusion:**
+- The artificial spread structure dominates any inventory risk
+- Skewing quotes sacrifices guaranteed spread capture without sufficient benefit
+
+---
+
+### 10.3 Midprice as Anchor
+
+Replaced wall-based anchor with:
+
+$$
+\tilde{p}_t = \frac{p_t^{b,*} + p_t^{a,*}}{2}
+$$
+
+**Result:**
+- No change in PnL (≈ 1050)
+
+**Conclusion:**
+- Anchor definition is largely irrelevant due to price stability
+
+---
+
+### 10.4 Stricter Taking Conditions
+
+Taking logic was refined using:
+- Microprice confirmation
+- Increased thresholds
+
+**Result:**
+- No improvement in PnL
+
+**Conclusion:**
+- Aggressive trading does not contribute meaningful alpha
+
+---
+
+## 11. Observations
+
+Across all experiments:
+
+- Baseline strategy PnL: **1050**
+- Modified strategies:
+  - Microprice adjustment: **1050**
+  - Midprice anchor: **1050**
+  - Inventory skew: **204**
+
+Additionally:
+- Reference strategies and default implementations also converge to **≈1050 PnL**
+
+---
+
+## 12. Conclusion
+
+The EMERALDS market exhibits the following properties:
+
+1. **Price Stability**
+   - Midprice is effectively constant
+   - No exploitable drift or volatility
+
+2. **Artificial Spread Structure**
+   - Profits arise primarily from spread capture
+   - The spread is fixed and reliably harvestable
+
+3. **Lack of Executable Alpha**
+   - Microstructure signals exist statistically
+   - But do not translate into meaningful trading profits
+
+---
+
+### Final Insight
+
+The problem reduces to:
+
+$$
+\max (\text{spread capture subject to minimal inventory risk})
+$$
+
+The base heuristic strategy already achieves this optimally.
+
+---
+
+### Practical Implication
+
+Further improvements (e.g., Avellaneda–Stoikov, fill probability models, or advanced signals) do not yield meaningful gains in this environment.
+
+Thus:
+
+> **The EMERALDS product is effectively solved using a simple market-making strategy, and additional complexity leads to diminishing or negative returns.**
