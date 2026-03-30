@@ -1,4 +1,4 @@
-TRADERS: t.Final[dict[Product, t.Type[BaseTrader]]] = {Product.EMERALDS: EmeraldTrader}
+TRADERS: t.Final[dict[Product, t.Type[BaseTrader]]] = {Product.EMERALDS: EmeraldTrader, Product.TOMATOES: TomatoTrader}
 
 
 class Trader:
