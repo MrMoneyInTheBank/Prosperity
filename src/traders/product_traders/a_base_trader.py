@@ -51,6 +51,14 @@ class BaseTrader(ABC):
 
         return buy_anchor, ask_anchor, mid_anchor
 
+    def get_midprice(self) -> t.Optional[float]:
+        if not self.best_bid or not self.best_ask:
+            return None
+
+        midprice: t.Final[float] = (self.best_bid + self.best_ask) / 2
+
+        return midprice
+
     def get_microprice(self) -> t.Optional[float]:
         if not self.best_bid or not self.best_ask:
             return None
