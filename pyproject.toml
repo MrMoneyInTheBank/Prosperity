@@ -9,6 +9,7 @@ dependencies = [
     "jupyter>=1.1.1",
     "matplotlib>=3.10.8",
     "polars>=1.39.2",
+    "prosperity3bt",
 ]
 
 [project.scripts]
@@ -20,3 +21,6 @@ build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src"]
+
+[tool.uv.sources]
+prosperity3bt = { path = "../imc-prosperity-3-backtester" }
