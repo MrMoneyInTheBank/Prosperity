@@ -90,4 +90,4 @@ class BaseTrader(ABC):
 
     @abstractmethod
     def get_orders(self) -> dict[str, list[Order]]:
-        pass
+        raise NotImplementedError()
