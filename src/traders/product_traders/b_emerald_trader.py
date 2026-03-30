@@ -38,7 +38,7 @@ class EmeraldTrader(BaseTrader):
                 make_ask = min(make_ask, underbidding_price)
                 break
             elif sell_price > self.mid_anchor:
-                ask_price = min(make_ask, sell_price)
+                make_ask = min(make_ask, sell_price)
                 break
 
         self.bid(make_bid, self.max_allowed_buy_volume)
