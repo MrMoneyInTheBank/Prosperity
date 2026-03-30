@@ -1,6 +1,6 @@
 # =========================================
 # Auto-generated code for trader.py
-# Generated on 2026-03-30 21:12:11
+# Generated on 2026-03-30 20:56:44
 # =========================================
 
 import typing as t
@@ -142,7 +142,7 @@ class EmeraldTrader(BaseTrader):
                 make_ask = min(make_ask, underbidding_price)
                 break
             elif sell_price > self.mid_anchor:
-                make_ask = min(make_ask, sell_price)
+                ask_price = min(make_ask, sell_price)
                 break
 
         self.bid(make_bid, self.max_allowed_buy_volume)
@@ -157,7 +157,7 @@ class TomatoTrader(BaseTrader):
 
     def get_orders(self) -> dict[str, list[Order]]:
 
-        alpha = 0.3
+        alpha = 1
         fair_price = (
             self.mid_anchor
             if (mp := self.get_microprice()) is None
