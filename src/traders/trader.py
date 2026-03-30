@@ -1,6 +1,6 @@
 # =========================================
 # Auto-generated code for trader.py
-# Generated on 2026-03-30 15:20:23
+# Generated on 2026-03-30 16:20:38
 # =========================================
 
 import typing as t
@@ -63,6 +63,20 @@ class BaseTrader(ABC):
         mid_anchor = (buy_anchor + ask_anchor) // 2
 
         return buy_anchor, ask_anchor, mid_anchor
+
+    def get_microprice(self) -> t.Optional[float]:
+        if not self.best_bid or not self.best_ask:
+            return None
+
+        bid_vol: int = self.buy_orders[self.best_bid]
+        ask_vol: int = self.sell_orders[self.best_ask]
+        total_vol: int = bid_vol + ask_vol
+
+        cross_weighted_price_sum: int = (self.best_ask * bid_vol) + (
+            self.best_bid * ask_vol
+        )
+
+        return cross_weighted_price_sum / total_vol
 
     def get_max_allowed_volume(self):
         max_allowed_buy_volume = self.position_limit - self.initial_position
@@ -142,15 +156,23 @@ class TomatoTrader(BaseTrader):
         super().__init__(product, trading_state)
 
     def get_orders(self) -> dict[str, list[Order]]:
+
+        alpha = 0.3
+        fair_price = (
+            self.mid_anchor
+            if (mp := self.get_microprice()) is None
+            else self.mid_anchor + alpha * (mp - self.mid_anchor)
+        )
+
         # pure arbitrage
         for ask_price, ask_vol in self.sell_orders.items():
-            if ask_price <= self.mid_anchor - 1:
+            if ask_price <= fair_price - 1:
                 self.bid(ask_price, ask_vol)
             elif ask_price <= self.mid_anchor and self.initial_position < 0:
                 self.bid(ask_price, ask_vol)
 
         for bid_price, bid_vol in self.buy_orders.items():
-            if bid_price >= self.mid_anchor + 1:
+            if bid_price >= fair_price + 1:
                 self.ask(bid_price, bid_vol)
             elif bid_price >= self.mid_anchor and self.initial_position > 0:
                 self.ask(bid_price, bid_vol)
@@ -173,7 +195,7 @@ class TomatoTrader(BaseTrader):
                 make_ask = min(make_ask, underbidding_price)
                 break
             elif sell_price > self.mid_anchor:
-                ask_price = min(make_ask, sell_price)
+                make_ask = min(make_ask, sell_price)
                 break
 
         self.bid(make_bid, self.max_allowed_buy_volume)
