@@ -84,6 +84,10 @@ class BaseTrader(ABC):
 
         return bid_vol, ask_vol
 
+    def get_market_imbalance(self) -> float:
+        bid_vol, ask_vol = self.get_market_bid_ask_vol()
+        return (bid_vol - ask_vol) / (bid_vol + ask_vol)
+
     def bid(self, price, volume) -> None:
         abs_volume = min(abs(int(volume)), self.max_allowed_buy_volume)
         order = Order(self.product, int(price), abs_volume)

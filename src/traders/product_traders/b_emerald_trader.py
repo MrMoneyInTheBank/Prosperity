@@ -12,13 +12,16 @@ class EmeraldTrader(BaseTrader):
             return {self.product: []}
 
         alpha = 0.3
+        beta = 0.4
         microprice = self.get_microprice()
         midprice = self.get_midprice()
+        imbalance = self.get_market_imbalance()
+        imbalance_adj = beta * imbalance
 
         assert microprice is not None
         assert midprice is not None
 
-        fair_price = midprice + alpha * (microprice - midprice)
+        fair_price = (midprice + alpha * (microprice - midprice)) + imbalance_adj
 
         for ask_price, ask_vol in self.sell_orders.items():
             if ask_price <= fair_price - 1:
