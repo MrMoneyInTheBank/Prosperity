@@ -8,16 +8,28 @@ class EmeraldTrader(BaseTrader):
 
     def get_orders(self) -> dict[str, list[Order]]:
         # pure arbitrage
+        if not self.best_bid or not self.best_ask:
+            return {self.product: []}
+
+        alpha = 0.3
+        microprice = self.get_microprice()
+        midprice = self.get_midprice()
+
+        assert microprice is not None
+        assert midprice is not None
+
+        fair_price = midprice + alpha * (microprice - midprice)
+
         for ask_price, ask_vol in self.sell_orders.items():
-            if ask_price <= self.mid_anchor - 1:
+            if ask_price <= fair_price - 1:
                 self.bid(ask_price, ask_vol)
-            elif ask_price <= self.mid_anchor and self.initial_position < 0:
+            elif ask_price <= fair_price and self.initial_position < 0:
                 self.bid(ask_price, ask_vol)
 
         for bid_price, bid_vol in self.buy_orders.items():
-            if bid_price >= self.mid_anchor + 1:
+            if bid_price >= fair_price + 1:
                 self.ask(bid_price, bid_vol)
-            elif bid_price >= self.mid_anchor and self.initial_position > 0:
+            elif bid_price >= fair_price and self.initial_position > 0:
                 self.ask(bid_price, bid_vol)
 
         # market making
