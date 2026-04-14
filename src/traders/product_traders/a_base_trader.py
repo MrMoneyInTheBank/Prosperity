@@ -92,13 +92,13 @@ class BaseTrader(ABC):
         bid_vol, ask_vol = self.get_market_bid_ask_vol()
         return (bid_vol - ask_vol) / (bid_vol + ask_vol)
 
-    def bid(self, price, volume) -> None:
+    def bid(self, price: int, volume: int) -> None:
         abs_volume = min(abs(int(volume)), self.max_allowed_buy_volume)
         order = Order(self.product, int(price), abs_volume)
         self.max_allowed_buy_volume -= abs_volume
         self.orders.append(order)
 
-    def ask(self, price, volume) -> None:
+    def ask(self, price: int, volume: int) -> None:
         abs_volume = min(abs(int(volume)), self.max_allowed_sell_volume)
         order = Order(self.product, int(price), -abs_volume)
         self.max_allowed_sell_volume -= abs_volume
