@@ -1,6 +1,6 @@
 # =========================================
 # Auto-generated code for trader.py
-# Generated on 2026-04-14 16:52:30
+# Generated on 2026-04-14 16:47:04
 # =========================================
 
 import typing as t
@@ -14,16 +14,9 @@ from datamodel import Order, OrderDepth, TradingState
 class Product(StrEnum):
     EMERALDS = "EMERALDS"
     TOMATOES = "TOMATOES"
-    ASH_COATED_OSMIUM = "ASH_COATED_OSMIUM"
-    INTARIAN_PEPPER_ROOT = "INTARIAN_PEPPER_ROOT"
 
 
-POS_LIMITS: t.Final[dict[Product, int]] = {
-    Product.EMERALDS: 80,
-    Product.TOMATOES: 80,
-    Product.ASH_COATED_OSMIUM: 80,
-    Product.INTARIAN_PEPPER_ROOT: 80,
-}
+POS_LIMITS: t.Final[dict[Product, int]] = {Product.EMERALDS: 80, Product.TOMATOES: 80}
 
 
 class BaseTrader(ABC):
@@ -270,19 +263,9 @@ class AshCoatedOsmiumTrader(BaseTrader):
         return {self.product: self.orders}
 
 
-class IntarianPepperRootTrader(BaseTrader):
-    def __init__(self, product: Product, trading_state: TradingState) -> None:
-        super().__init__(product, trading_state)
-
-    def get_orders(self) -> dict[str, list[Order]]:
-        return {self.product: []}
-
-
 TRADERS: t.Final[dict[Product, t.Type[BaseTrader]]] = {
     Product.EMERALDS: EmeraldTrader,
     Product.TOMATOES: TomatoTrader,
-    Product.ASH_COATED_OSMIUM: AshCoatedOsmiumTrader,
-    Product.INTARIAN_PEPPER_ROOT: IntarianPepperRootTrader,
 }
 
 

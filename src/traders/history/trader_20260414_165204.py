@@ -1,6 +1,6 @@
 # =========================================
 # Auto-generated code for trader.py
-# Generated on 2026-04-14 16:52:30
+# Generated on 2026-04-14 16:52:04
 # =========================================
 
 import typing as t
@@ -282,7 +282,7 @@ TRADERS: t.Final[dict[Product, t.Type[BaseTrader]]] = {
     Product.EMERALDS: EmeraldTrader,
     Product.TOMATOES: TomatoTrader,
     Product.ASH_COATED_OSMIUM: AshCoatedOsmiumTrader,
-    Product.INTARIAN_PEPPER_ROOT: IntarianPepperRootTrader,
+    Product.INTARAN_PEPPER_ROOT: IntaranPepperRootTrader,
 }
 
 
