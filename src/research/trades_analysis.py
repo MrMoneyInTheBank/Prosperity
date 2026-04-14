@@ -2,9 +2,9 @@ import typing as t
 
 import polars as pl
 
-from research.plots import Plot, TradesPlots, plot_histogram
 from src.config.constants import Order
 from src.processing.trades import TradesDataProcessor
+from src.research.plots import Plot, TradesPlots, plot_histogram
 from src.research.results import TradesAnalysisResult
 
 

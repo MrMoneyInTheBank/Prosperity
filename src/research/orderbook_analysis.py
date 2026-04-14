@@ -67,7 +67,7 @@ def run_orderbook_analysis(
 
     imb_corr_plot: t.Final[Plot] = plot_scatter_chart(
         X_data=orderbook_data["imbalance"].to_numpy(),
-        Y_data=orderbook_data["future_log_ret"].to_numpy(),
+        Y_data=orderbook_data["future_log_returns"].to_numpy(),
         title="Imbalance vs Future returns",
         x_title="Imabalance",
         y_title="Future returns (log)",
@@ -75,7 +75,7 @@ def run_orderbook_analysis(
 
     microprice_dev_corr_plot: t.Final[Plot] = plot_scatter_chart(
         X_data=orderbook_data["microprice_dev"].to_numpy(),
-        Y_data=orderbook_data["future_log_ret"].to_numpy(),
+        Y_data=orderbook_data["future_log_returns"].to_numpy(),
         title="Microprice deviation vs Future returns",
         x_title="Microprice deviation",
         y_title="Future returns (log)",
