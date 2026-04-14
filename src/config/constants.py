@@ -41,11 +41,18 @@ TRADER_FILE: t.Final[Path] = TRADERS_DIR / "trader.py"
 class Product(StrEnum):
     EMERALDS = "EMERALDS"
     TOMATOES = "TOMATOES"
+    ASH_COATED_OSMIUM = "ASH_COATED_OSMIUM"
+    INTARIAN_PEPPER_ROOT = "INTARIAN_PEPPER_ROOT"
 
 
 # Position limits
 
-POS_LIMITS: t.Final[dict[Product, int]] = {Product.EMERALDS: 80, Product.TOMATOES: 80}
+POS_LIMITS: t.Final[dict[Product, int]] = {
+    Product.EMERALDS: 80,
+    Product.TOMATOES: 80,
+    Product.ASH_COATED_OSMIUM: 80,
+    Product.INTARIAN_PEPPER_ROOT: 80,
+}
 
 
 # Orderbook
