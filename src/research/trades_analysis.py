@@ -1,27 +1,11 @@
 import typing as t
 
-import matplotlib.pyplot as plt
-import numpy as np
 import polars as pl
-from numpy.typing import NDArray
 
+from research.plots import Plot, TradesPlots, plot_histogram
 from src.config.constants import Order
 from src.processing.trades import TradesDataProcessor
-from src.research.results import Plot, Plots, TradesAnalysisResult
-
-
-def plot_histogram(data: NDArray[np.int64], title: str, x_title: str) -> Plot:
-    fig, ax = plt.subplots()
-    ax.hist(data)
-    ax.set_yscale("log")
-
-    ax.set_xlabel(x_title)
-    ax.set_ylabel("Frequency (log)")
-    ax.set_title(title)
-
-    plt.close(fig)
-
-    return fig, ax
+from src.research.results import TradesAnalysisResult
 
 
 def analyse_time_intervals(time_interval_data: pl.DataFrame) -> pl.DataFrame:
@@ -96,7 +80,7 @@ def analyse_trade_price_streaks(trade_price_data: pl.DataFrame) -> pl.DataFrame:
 
 def run_trades_analysis(
     raw_trades_data: TradesDataProcessor, orderbook_data: pl.DataFrame
-) -> TradesAnalysisResult:
+) -> t.Tuple[TradesAnalysisResult, TradesPlots]:
     trades_data: t.Final[pl.DataFrame] = (
         raw_trades_data.clean()
         .join_select_orderbook_data(orderbook_data)
@@ -140,19 +124,21 @@ def run_trades_analysis(
         x_title="Streak length",
     )
 
-    plots: t.Final[Plots] = Plots(
+    plots: t.Final[TradesPlots] = TradesPlots(
         time_interval_until_plt=time_interval_prev_plot,
         time_interval_next_plt=time_interval_next_plot,
         quantities_plt=quantities_plot,
         streaks_plt=streaks_plot,
     )
 
-    return TradesAnalysisResult(
-        raw_trades_data=raw_trades_data,
-        trades_data=trades_data,
-        time_interval_stats=time_intervals_stats,
-        quantities_stats=quantities_stats,
-        order_side_stats=order_side_stats,
-        trade_price_streaks_stats=trade_price_streaks_stats,
-        plots=plots,
+    return (
+        TradesAnalysisResult(
+            raw_trades_data=raw_trades_data,
+            trades_data=trades_data,
+            time_interval_stats=time_intervals_stats,
+            quantities_stats=quantities_stats,
+            order_side_stats=order_side_stats,
+            trade_price_streaks_stats=trade_price_streaks_stats,
+        ),
+        plots,
     )

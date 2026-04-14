@@ -5,11 +5,8 @@ from src.processing.dataset_spec import DatasetSpec
 from src.processing.orderbook import OrderBookDataProcessor, OrderBookDataset
 from src.processing.trades import TradesDataProcessor, TradesDataset
 from src.research.orderbook_analysis import run_orderbook_analysis
-from src.research.results import (
-    AnalysisResult,
-    OrderbookAnalysisResult,
-    TradesAnalysisResult,
-)
+from src.research.plots import Plots
+from src.research.results import AnalysisResult
 from src.research.trades_analysis import run_trades_analysis
 
 
@@ -26,10 +23,11 @@ def run_analysis(round: int, day: int, product: str) -> AnalysisResult:
         dataset.trades()
     ).for_product(product)
 
-    orderbook_analysis: OrderbookAnalysisResult = run_orderbook_analysis(
-        raw_orderbook_data
-    )
-    trades_analysis: TradesAnalysisResult = run_trades_analysis(
+    orderbook_analysis, orderbook_plots = run_orderbook_analysis(raw_orderbook_data)
+    trades_analysis, trades_plots = run_trades_analysis(
         raw_trades_data, orderbook_data=orderbook_analysis.orderbook_data
     )
-    return AnalysisResult(orderbook_analysis, trades_analysis)
+
+    plots = Plots(orderbook=orderbook_plots, trades=trades_plots)
+
+    return AnalysisResult(orderbook_analysis, trades_analysis, plots)

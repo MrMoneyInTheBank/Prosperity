@@ -1,13 +1,10 @@
-from dataclasses import dataclass, fields
+from dataclasses import dataclass
 
 import polars as pl
-from matplotlib.axes import Axes
-from matplotlib.figure import Figure
 
 from src.processing.orderbook import OrderBookDataProcessor
 from src.processing.trades import TradesDataProcessor
-
-type Plot = tuple[Figure, Axes]
+from src.research.plots import Plots
 
 
 @dataclass(frozen=True)
@@ -20,22 +17,6 @@ class OrderbookAnalysisResult:
 
 
 @dataclass(frozen=True)
-class Plots:
-    time_interval_until_plt: Plot
-    time_interval_next_plt: Plot
-    quantities_plt: Plot
-    streaks_plt: Plot
-
-
-def display_plots(plots: Plots) -> None:
-    from IPython.display import display
-
-    for field in fields(plots):
-        plot = getattr(plots, field.name)
-        display(plot[0])
-
-
-@dataclass(frozen=True)
 class TradesAnalysisResult:
     raw_trades_data: TradesDataProcessor
     trades_data: pl.DataFrame
@@ -43,10 +24,10 @@ class TradesAnalysisResult:
     quantities_stats: pl.DataFrame
     order_side_stats: pl.DataFrame
     trade_price_streaks_stats: pl.DataFrame
-    plots: Plots
 
 
 @dataclass(frozen=True)
 class AnalysisResult:
     orderbook_analysis_result: OrderbookAnalysisResult
     trades_analysis_result: TradesAnalysisResult
+    plots: Plots
