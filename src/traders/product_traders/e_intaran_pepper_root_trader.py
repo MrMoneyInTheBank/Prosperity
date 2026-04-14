@@ -7,4 +7,10 @@ class IntarianPepperRootTrader(BaseTrader):
         super().__init__(product, trading_state)
 
     def get_orders(self) -> dict[str, list[Order]]:
-        return {self.product: []}
+        if not self.best_ask:
+            return {self.product: []}
+
+        ask_vol = self.sell_orders[self.best_ask]
+        self.bid(self.best_ask, ask_vol)
+
+        return {self.product: self.orders}
