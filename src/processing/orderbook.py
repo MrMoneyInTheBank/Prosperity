@@ -41,6 +41,9 @@ class OrderBookDataProcessor(BaseProcessor):
 
     def clean(self) -> "OrderBookDataProcessor":
         self._data = self._data.drop(ORDERBOOK_DROP_COLS)
+        self._data = self._data.filter(
+            (pl.col("mid_price").is_not_null()) & (pl.col("mid_price") != 0)
+        )
         return self
 
     def add_microstructure_features(self) -> "OrderBookDataProcessor":
