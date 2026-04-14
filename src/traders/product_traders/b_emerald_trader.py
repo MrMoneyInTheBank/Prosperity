@@ -26,6 +26,9 @@ class EmeraldTrader(BaseTrader):
                 self.ask(bid_price, bid_vol)
 
         # market making
+        if not self.buy_anchor or not self.ask_anchor:
+            return {self.product: self.orders}
+
         make_bid = int(self.buy_anchor + 1)
         make_ask = int(self.ask_anchor - 1)
 

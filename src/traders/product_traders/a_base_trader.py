@@ -44,7 +44,11 @@ class BaseTrader(ABC):
 
         return best_bid, best_ask
 
-    def get_order_anchors(self) -> tuple[int, int, int]:
+    def get_order_anchors(
+        self,
+    ) -> tuple[t.Optional[int], t.Optional[int], t.Optional[int]]:
+        if not self.buy_orders or not self.sell_orders:
+            return None, None, None
         buy_anchor = min(self.buy_orders.keys())
         ask_anchor = max(self.sell_orders.keys())
         mid_anchor = (buy_anchor + ask_anchor) // 2
