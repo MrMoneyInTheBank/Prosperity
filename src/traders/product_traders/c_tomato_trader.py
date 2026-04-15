@@ -7,6 +7,8 @@ class TomatoTrader(BaseTrader):
         super().__init__(product, trading_state)
 
     def get_orders(self) -> dict[str, list[Order]]:
+        if not (self.buy_anchor and self.ask_anchor and self.mid_anchor):
+            return {self.product: []}
         # pure arbitrage
         for ask_price, ask_vol in self.sell_orders.items():
             if ask_price <= self.mid_anchor - 1:
