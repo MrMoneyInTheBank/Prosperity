@@ -14,7 +14,7 @@ class BaseDataset(ABC):
     def __init__(self, csv_path: Path) -> None:
         self.csv_path: Path = csv_path
         self._raw_data: pl.DataFrame = self.load_csv()
-        self._raw_data = self._raw_data.cast(self.schema)
+        self._raw_data = self._raw_data.cast(self.schema)  # type: ignore[arg-type]
         self.validate_schema()
 
     def load_csv(self) -> pl.DataFrame:
