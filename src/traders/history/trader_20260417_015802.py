@@ -532,7 +532,6 @@ class Trader:
                 )
                 trader_instance = trader(product, trading_state, product_prev_state)
                 result.update(trader_instance.get_orders())
-                trader_data[product] = trader_instance.save_current_state()
 
                 logger.print(
                     f"{product} pos={trading_state.position.get(product, 0)} "
