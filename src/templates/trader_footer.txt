@@ -27,9 +27,7 @@ class Trader:
         except (TypeError, ValueError):
             return None
 
-    def serialize_trading_state(
-        self, trader_data: dict[str, PreviousTradingState]
-    ) -> str:
+    def serialize_trading_state(self, trader_data: dict[str, dict]) -> str:
         return json.dumps(trader_data)
 
     def run(
@@ -38,7 +36,7 @@ class Trader:
         result: dict[str, list[Order]] = {}
         prev_trading_state = self.load_prev_trading_state(trading_state.traderData)
 
-        trader_data: dict[str, PreviousTradingState] = {}
+        trader_data: dict[str, dict] = {}
 
         for product, trader in TRADERS.items():
             if product in trading_state.order_depths:
@@ -47,7 +45,7 @@ class Trader:
                 )
                 trader_instance = trader(product, trading_state, product_prev_state)
                 result.update(trader_instance.get_orders())
-                trader_data[product] = trader_instance.save_current_state()
+                trader_data[product] = asdict(trader_instance.save_current_state())
 
                 logger.print(
                     f"{product} pos={trading_state.position.get(product, 0)} "
