@@ -5,6 +5,7 @@ TRADERS: t.Final[dict[Product, t.Type[BaseTrader]]] = {
     Product.INTARIAN_PEPPER_ROOT: IntarianPepperRootTrader
 }
 
+logger = Logger()
 
 class Trader:
     def run(self, trading_state: TradingState):
@@ -15,4 +16,15 @@ class Trader:
                 trader_instance = trader(product, trading_state)
                 result.update(trader_instance.get_orders())
 
-        return result, 0, ""
+                logger.print(
+                    f"{product} pos={trading_state.position.get(product, 0)} "
+                    f"bids={len(trading_state.order_depths[product].buy_orders)} asks={len(trading_state.order_depths[product].sell_orders)} "
+                    f"orders={len(result[product])}"
+                )
+
+
+        trader_data = ""
+        conversions = 0
+
+        logger.flush(trading_state, result, conversions, trader_data)
+        return result, conversions, trader_data
