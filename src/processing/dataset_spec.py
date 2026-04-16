@@ -22,11 +22,11 @@ class DatasetSpec:
     def prices(self) -> Path:
         return (
             DATA_DIR
-            / f"round-{self.round_number}/day_{self.day}/prices_round_{self.round_number}_day_{self.day}.csv"
+            / f"round{self.round_number}/prices_round_{self.round_number}_day_{self.day}.csv"
         )
 
     def trades(self) -> Path:
         return (
             DATA_DIR
-            / f"round-{self.round_number}/day_{self.day}/trades_round_{self.round_number}_day_{self.day}.csv"
+            / f"round{self.round_number}/trades_round_{self.round_number}_day_{self.day}.csv"
         )
