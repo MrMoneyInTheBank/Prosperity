@@ -34,7 +34,7 @@ POS_LIMITS: t.Final[dict[Product, int]] = {
 
 @dataclass
 class PreviousTradingState:
-    midprice: float
+    midprice: t.Optional[float]
 
 class Logger:
     def __init__(self) -> None:

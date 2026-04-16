@@ -136,4 +136,4 @@ TRADES_ORDERBOOK_JOIN_RENAMES: t.Final[dict[str, str]] = {
 # Previous trading state
 @dataclass(frozen=True)
 class PreviousTradingState:
-    midprice: float
+    midprice: t.Optional[float]
