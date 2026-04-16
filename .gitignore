@@ -126,3 +126,4 @@ coverage.xml
 
 # historical data
 /data
+/src/traders/history
