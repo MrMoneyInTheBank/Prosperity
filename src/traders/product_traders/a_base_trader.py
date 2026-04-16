@@ -3,11 +3,16 @@ from abc import ABC, abstractmethod
 from operator import itemgetter
 
 from datamodel import Order, OrderDepth, TradingState
-from src.config.constants import POS_LIMITS, Product
+from src.config.constants import POS_LIMITS, Product, PreviousTradingState
 
 
 class BaseTrader(ABC):
-    def __init__(self, product: Product, trading_state: TradingState) -> None:
+    def __init__(
+        self,
+        product: Product,
+        trading_state: TradingState,
+        prev_state: PreviousTradingState,
+    ) -> None:
         self.product = product
         self.trading_state = trading_state
 

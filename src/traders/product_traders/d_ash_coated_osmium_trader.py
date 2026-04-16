@@ -1,18 +1,16 @@
 from datamodel import Order, TradingState
+from src.config.constants import PreviousTradingState
 from src.traders.product_traders.a_base_trader import BaseTrader, Product
-
-"""
-4 main issues
-- sitting out of ticks (early exits without mm)
-- queue priority
-- suboptimal spreads
-- not using reservation prices
-"""
 
 
 class AshCoatedOsmiumTrader(BaseTrader):
-    def __init__(self, product: Product, trading_state: TradingState) -> None:
-        super().__init__(product, trading_state)
+    def __init__(
+        self,
+        product: Product,
+        trading_state: TradingState,
+        prev_state: PreviousTradingState,
+    ) -> None:
+        super().__init__(product, trading_state, prev_state)
 
     def get_orders(self) -> dict[str, list[Order]]:
         midprice = self.get_midprice()
