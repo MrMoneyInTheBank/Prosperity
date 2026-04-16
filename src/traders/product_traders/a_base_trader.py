@@ -22,6 +22,7 @@ class BaseTrader(ABC):
         self.initial_position = self.trading_state.position.get(self.product, 0)
         self.buy_orders, self.sell_orders = self.get_order_depths()
         self.best_bid, self.best_ask = self.get_best_quotes()
+        self.midprice = self.get_midprice()
         self.buy_anchor, self.ask_anchor, self.mid_anchor = self.get_order_anchors()
         self.max_allowed_buy_volume, self.max_allowed_sell_volume = (
             self.get_max_allowed_volume()
@@ -63,7 +64,10 @@ class BaseTrader(ABC):
 
     def get_midprice(self) -> t.Optional[float]:
         if not self.best_bid or not self.best_ask:
-            return self.prev_state.midprice if self.prev_state else None
+            if self.prev_state and self.prev_state.midprice:
+                return self.prev_state.midprice
+            else:
+                return None
 
         midprice: t.Final[float] = (self.best_bid + self.best_ask) / 2
 
@@ -109,6 +113,9 @@ class BaseTrader(ABC):
         order = Order(self.product, int(price), -abs_volume)
         self.max_allowed_sell_volume -= abs_volume
         self.orders.append(order)
+
+    def save_current_state(self) -> PreviousTradingState:
+        return PreviousTradingState(midprice=self.midprice)
 
     @abstractmethod
     def get_orders(self) -> dict[str, list[Order]]:
