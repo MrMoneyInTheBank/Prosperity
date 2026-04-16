@@ -1,6 +1,14 @@
 from datamodel import Order, TradingState
 from src.traders.product_traders.a_base_trader import BaseTrader, Product
 
+"""
+4 main issues
+- sitting out of ticks (early exits without mm)
+- queue priority
+- suboptimal spreads
+- not using reservation prices
+"""
+
 
 class AshCoatedOsmiumTrader(BaseTrader):
     def __init__(self, product: Product, trading_state: TradingState) -> None:
