@@ -1,6 +1,6 @@
 # =========================================
 # Auto-generated code for trader.py
-# Generated on 2026-04-16 21:14:41
+# Generated on 2026-04-16 21:12:36
 # =========================================
 
 import json
@@ -479,11 +479,7 @@ class Trader:
                     f"orders={len(result[product])}"
                 )
 
-        trader_data = ""
-        conversions = 0
-
-        logger.flush(trading_state, result, conversions, trader_data)
-        return result, conversions, trader_data
+        return result, 0, ""
 
 
 # End of auto-generated trader.py
