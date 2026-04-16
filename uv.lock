@@ -1565,7 +1565,7 @@ dependencies = [
     { name = "jupyter" },
     { name = "matplotlib" },
     { name = "polars" },
-    { name = "prosperity3bt" },
+    { name = "prosperity4btest" },
 ]
 
 [package.metadata]
@@ -1574,13 +1574,13 @@ requires-dist = [
     { name = "jupyter", specifier = ">=1.1.1" },
     { name = "matplotlib", specifier = ">=3.10.8" },
     { name = "polars", specifier = ">=1.39.2" },
-    { name = "prosperity3bt", directory = "../imc-prosperity-3-backtester" },
+    { name = "prosperity4btest", directory = "../imc-prosperity-4-backtester" },
 ]
 
 [[package]]
-name = "prosperity3bt"
-version = "0.0.0"
-source = { directory = "../imc-prosperity-3-backtester" }
+name = "prosperity4btest"
+version = "1.0.0"
+source = { directory = "../imc-prosperity-4-backtester" }
 dependencies = [
     { name = "ipython" },
     { name = "jsonpickle" },
