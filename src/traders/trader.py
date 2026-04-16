@@ -1,6 +1,6 @@
 # =========================================
 # Auto-generated code for trader.py
-# Generated on 2026-04-17 04:45:30
+# Generated on 2026-04-17 05:00:13
 # =========================================
 
 import json
@@ -195,6 +195,7 @@ class BaseTrader(ABC):
         self.orders: list[Order] = []
         self.position_limit = POS_LIMITS[self.product]
         self.initial_position = self.trading_state.position.get(self.product, 0)
+        self.position = self.initial_position
         self.buy_orders, self.sell_orders = self.get_order_depths()
         self.best_bid, self.best_ask = self.get_best_quotes()
         self.midprice = self.get_midprice()
@@ -281,12 +282,14 @@ class BaseTrader(ABC):
         abs_volume = min(abs(int(volume)), self.max_allowed_buy_volume)
         order = Order(self.product, int(price), abs_volume)
         self.max_allowed_buy_volume -= abs_volume
+        self.position += abs_volume
         self.orders.append(order)
 
     def ask(self, price: int, volume: int) -> None:
         abs_volume = min(abs(int(volume)), self.max_allowed_sell_volume)
         order = Order(self.product, int(price), -abs_volume)
         self.max_allowed_sell_volume -= abs_volume
+        self.position -= abs_volume
         self.orders.append(order)
 
     def save_current_state(self) -> PreviousTradingState:
@@ -422,7 +425,7 @@ class AshCoatedOsmiumTrader(BaseTrader):
         if not midprice:
             return {self.product: []}
 
-        # pure arbitrage
+        # arbitrage
         for ask_price, ask_vol in self.sell_orders.items():
             if ask_price <= midprice - 1:
                 self.bid(ask_price, ask_vol)
@@ -439,8 +442,8 @@ class AshCoatedOsmiumTrader(BaseTrader):
         if not self.buy_anchor or not self.ask_anchor:
             return {self.product: self.orders}
 
-        make_bid = int(self.buy_anchor + 1)
-        make_ask = int(self.ask_anchor - 1)
+        make_bid = math.floor(self.buy_anchor + 1)
+        make_ask = math.ceil(self.ask_anchor - 1)
 
         for bid_price, bid_vol in self.buy_orders.items():
             overbidding_price = bid_price + 1
