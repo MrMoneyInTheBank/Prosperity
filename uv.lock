@@ -1562,6 +1562,7 @@ version = "0.1.0"
 source = { editable = "." }
 dependencies = [
     { name = "ipykernel" },
+    { name = "jsonpickle" },
     { name = "jupyter" },
     { name = "matplotlib" },
     { name = "polars" },
@@ -1571,6 +1572,7 @@ dependencies = [
 [package.metadata]
 requires-dist = [
     { name = "ipykernel", specifier = ">=7.2.0" },
+    { name = "jsonpickle", specifier = ">=4.1.1" },
     { name = "jupyter", specifier = ">=1.1.1" },
     { name = "matplotlib", specifier = ">=3.10.8" },
     { name = "polars", specifier = ">=1.39.2" },
