@@ -1,5 +1,6 @@
 import json
 import typing as t
+import jsonpickle  # type: ignore[import-untyped]
 
 # Type aliases
 Time = int
@@ -60,8 +61,43 @@ class Trade:
         return f"({self.symbol}, {self.buyer} << {self.seller}, {self.price}, {self.quantity}, {self.timestamp})"
 
 
+class ConversionObservation:
+    def __init__(
+        self,
+        bidPrice: float,
+        askPrice: float,
+        transportFees: float,
+        exportTariff: float,
+        importTariff: float,
+        sugarPrice: float,
+        sunlightIndex: float,
+    ):
+        self.bidPrice = bidPrice
+        self.askPrice = askPrice
+        self.transportFees = transportFees
+        self.exportTariff = exportTariff
+        self.importTariff = importTariff
+        self.sugarPrice = sugarPrice
+        self.sunlightIndex = sunlightIndex
+
+
 class Observation:
-    pass
+    def __init__(
+        self,
+        plainValueObservations: dict[Product, ObservationValue],
+        conversionObservations: dict[Product, ConversionObservation],
+    ) -> None:
+        self.plainValueObservations = plainValueObservations
+        self.conversionObservations = conversionObservations
+
+    def __str__(self) -> str:
+        return (
+            "(plainValueObservations: "
+            + jsonpickle.encode(self.plainValueObservations)  # pyright: ignore[reportOperatorIssue]
+            + ", conversionObservations: "
+            + jsonpickle.encode(self.conversionObservations)
+            + ")"
+        )
 
 
 class TradingState(object):
