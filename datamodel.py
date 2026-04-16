@@ -4,6 +4,7 @@ import typing as t
 # Type aliases
 Time = int
 Position = int
+ObservationValue = int
 Symbol = str
 Product = str
 UserId = str
@@ -86,3 +87,8 @@ class TradingState(object):
 
     def toJSON(self):
         return json.dumps(self, default=lambda obj: obj.__dict__, sort_keys=True)
+
+
+class ProsperityEncoder(json.JSONEncoder):
+    def default(self, o: object) -> t.Any:
+        return o.__dict__
