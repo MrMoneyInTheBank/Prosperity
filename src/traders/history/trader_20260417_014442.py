@@ -1,6 +1,6 @@
 # =========================================
 # Auto-generated code for trader.py
-# Generated on 2026-04-17 01:51:32
+# Generated on 2026-04-17 01:44:42
 # =========================================
 
 import json
@@ -189,7 +189,6 @@ class BaseTrader(ABC):
     ) -> None:
         self.product = product
         self.trading_state = trading_state
-        self.prev_state = prev_state
 
         self.orders: list[Order] = []
         self.position_limit = POS_LIMITS[self.product]
@@ -237,7 +236,7 @@ class BaseTrader(ABC):
 
     def get_midprice(self) -> t.Optional[float]:
         if not self.best_bid or not self.best_ask:
-            return self.prev_state.midprice if self.prev_state else None
+            return None
 
         midprice: t.Final[float] = (self.best_bid + self.best_ask) / 2
 
