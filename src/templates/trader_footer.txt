@@ -8,7 +8,7 @@ TRADERS: t.Final[dict[Product, t.Type[BaseTrader]]] = {
 logger = Logger()
 
 class Trader:
-    def run(self, trading_state: TradingState):
+    def run(self, trading_state: TradingState) -> t.Tuple[dict[str, list[Order]], int, str]:
         result: dict[str, list[Order]] = {}
 
         for product, trader in TRADERS.items():
