@@ -64,7 +64,7 @@ class BaseTrader(ABC):
 
     def get_midprice(self) -> t.Optional[float]:
         if not self.best_bid or not self.best_ask:
-            if self.prev_state and self.prev_state.midprice:
+            if self.prev_state and self.prev_state.midprice is not None:
                 return self.prev_state.midprice
             else:
                 return None
@@ -74,7 +74,7 @@ class BaseTrader(ABC):
         return midprice
 
     def get_microprice(self) -> t.Optional[float]:
-        if not self.best_bid or not self.best_ask:
+        if self.best_bid is None or self.best_ask is None:
             return None
 
         bid_vol: int = self.buy_orders[self.best_bid]
