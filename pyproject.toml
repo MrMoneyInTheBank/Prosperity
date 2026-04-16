@@ -26,3 +26,12 @@ packages = ["src"]
 
 [tool.uv.sources]
 prosperity4btest = { path = "../imc-prosperity-4-backtester" }
+
+[tool.mypy]
+explicit_package_bases = true
+exclude = "src/traders/history/*"
+
+[dependency-groups]
+dev = [
+    "mypy>=1.20.1",
+]
