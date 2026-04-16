@@ -1,3 +1,4 @@
+import math
 import typing as t
 from datamodel import Order, TradingState
 from src.config.constants import PreviousTradingState
@@ -19,25 +20,29 @@ class AshCoatedOsmiumTrader(BaseTrader):
         if not midprice:
             return {self.product: []}
 
-        # pure arbitrage
+        # arbitrage
         for ask_price, ask_vol in self.sell_orders.items():
             if ask_price <= midprice - 1:
                 self.bid(ask_price, ask_vol)
+                self.bid_quotes += 1
             elif ask_price <= midprice and self.initial_position < 0:
                 self.bid(ask_price, ask_vol)
+                self.bid_quotes += 1
 
         for bid_price, bid_vol in self.buy_orders.items():
             if bid_price >= midprice + 1:
                 self.ask(bid_price, bid_vol)
+                self.ask_quotes += 1
             elif bid_price >= midprice and self.initial_position > 0:
                 self.ask(bid_price, bid_vol)
+                self.ask_quotes += 1
 
         # market making
         if not self.buy_anchor or not self.ask_anchor:
             return {self.product: self.orders}
 
-        make_bid = int(self.buy_anchor + 1)
-        make_ask = int(self.ask_anchor - 1)
+        make_bid = math.floor(self.buy_anchor + 1)
+        make_ask = math.ceil(self.ask_anchor - 1)
 
         for bid_price, bid_vol in self.buy_orders.items():
             overbidding_price = bid_price + 1
@@ -58,5 +63,7 @@ class AshCoatedOsmiumTrader(BaseTrader):
 
         self.bid(make_bid, self.max_allowed_buy_volume)
         self.ask(make_ask, self.max_allowed_sell_volume)
+        self.bid_quotes += 1
+        self.ask_quotes += 1
 
         return {self.product: self.orders}

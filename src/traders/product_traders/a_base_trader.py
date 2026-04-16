@@ -28,6 +28,9 @@ class BaseTrader(ABC):
             self.get_max_allowed_volume()
         )
 
+        self.bid_quotes = 0
+        self.ask_quotes = 0
+
     def get_order_depths(self) -> tuple[dict[int, int], dict[int, int]]:
         order_depth: OrderDepth = self.trading_state.order_depths[self.product]
         buy_orders = {
@@ -114,8 +117,43 @@ class BaseTrader(ABC):
         self.max_allowed_sell_volume -= abs_volume
         self.orders.append(order)
 
+    def get_filled_metrics(self) -> t.Tuple[int, int, int, int]:
+        own_trades = self.trading_state.own_trades[self.product]
+        bid_fills, bid_fill_vol = 0, 0
+        ask_fills, ask_fill_vol = 0, 0
+
+        for trade in own_trades:
+            if trade.buyer == "SUBMISSION":
+                bid_fills += 1
+                bid_fill_vol += trade.quantity
+            else:
+                ask_fills += 1
+                ask_fill_vol += trade.quantity
+
+        return bid_fills, bid_fill_vol, ask_fills, ask_fill_vol
+
     def save_current_state(self) -> PreviousTradingState:
-        return PreviousTradingState(midprice=self.midprice)
+        bid_fills, bid_fill_vol, ask_fills, ask_fill_vol = self.get_filled_metrics()
+        if not self.prev_state:
+            return PreviousTradingState(
+                midprice=self.midprice,
+                bid_quotes=self.bid_quotes,
+                ask_quotes=self.ask_quotes,
+                bid_fills=bid_fills,
+                ask_fills=ask_fills,
+                bid_fill_vol=bid_fill_vol,
+                ask_fill_vol=ask_fill_vol,
+            )
+        else:
+            return PreviousTradingState(
+                midprice=self.midprice,
+                bid_quotes=self.bid_quotes + self.prev_state.bid_quotes,
+                ask_quotes=self.ask_quotes + self.prev_state.ask_quotes,
+                bid_fills=bid_fills + self.prev_state.bid_fills,
+                ask_fills=ask_fills + self.prev_state.ask_fills,
+                bid_fill_vol=bid_fill_vol + self.prev_state.bid_fill_vol,
+                ask_fill_vol=ask_fill_vol + self.prev_state.ask_fill_vol,
+            )
 
     @abstractmethod
     def get_orders(self) -> dict[str, list[Order]]:
