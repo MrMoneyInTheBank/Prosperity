@@ -63,7 +63,6 @@ class Logger:
             )
         )
 
-        # We truncate state.traderData, trader_data, and self.logs to the same max. length to fit the log limit
         max_item_length = (self.max_log_length - base_length) // 3
 
         print(
