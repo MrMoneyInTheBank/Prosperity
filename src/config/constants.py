@@ -137,3 +137,9 @@ TRADES_ORDERBOOK_JOIN_RENAMES: t.Final[dict[str, str]] = {
 @dataclass(frozen=True)
 class PreviousTradingState:
     midprice: t.Optional[float]
+    bid_quotes: int
+    ask_quotes: int
+    bid_fills: int
+    ask_fills: int
+    bid_fill_vol: int
+    ask_fill_vol: int
