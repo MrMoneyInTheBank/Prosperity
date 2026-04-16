@@ -1,6 +1,7 @@
 import json
 import typing as t
 from abc import ABC, abstractmethod
+from dataclasses import dataclass
 from enum import StrEnum
 from operator import itemgetter
 
@@ -30,6 +31,10 @@ POS_LIMITS: t.Final[dict[Product, int]] = {
     Product.INTARIAN_PEPPER_ROOT: 80,
 }
 
+
+@dataclass
+class PreviousTradingState:
+    midprice: float
 
 class Logger:
     def __init__(self) -> None:
