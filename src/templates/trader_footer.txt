@@ -2,18 +2,50 @@ TRADERS: t.Final[dict[Product, t.Type[BaseTrader]]] = {
     Product.EMERALDS: EmeraldTrader,
     Product.TOMATOES: TomatoTrader,
     Product.ASH_COATED_OSMIUM: AshCoatedOsmiumTrader,
-    Product.INTARIAN_PEPPER_ROOT: IntarianPepperRootTrader
+    Product.INTARIAN_PEPPER_ROOT: IntarianPepperRootTrader,
 }
 
 logger = Logger()
 
+
 class Trader:
-    def run(self, trading_state: TradingState) -> t.Tuple[dict[str, list[Order]], int, str]:
+    def load_prev_trading_state(self, trader_data: str) -> t.Optional[dict[str, dict]]:
+        try:
+            return json.loads(trader_data)
+        except json.JSONDecodeError:
+            return None
+
+    def get_product_prev_state(
+        self, prev_state: t.Optional[dict[str, dict]], product: str
+    ) -> t.Optional[PreviousTradingState]:
+        if not prev_state or product not in prev_state:
+            return None
+
+        data = prev_state[product]
+        try:
+            return PreviousTradingState(**data)
+        except (TypeError, ValueError):
+            return None
+
+    def serialize_trading_state(
+        self, trader_data: dict[str, PreviousTradingState]
+    ) -> str:
+        return json.dumps(trader_data)
+
+    def run(
+        self, trading_state: TradingState
+    ) -> t.Tuple[dict[str, list[Order]], int, str]:
         result: dict[str, list[Order]] = {}
+        prev_trading_state = self.load_prev_trading_state(trading_state.traderData)
+
+        trader_data: dict[str, PreviousTradingState] = {}
 
         for product, trader in TRADERS.items():
             if product in trading_state.order_depths:
-                trader_instance = trader(product, trading_state)
+                product_prev_state = self.get_product_prev_state(
+                    prev_trading_state, product
+                )
+                trader_instance = trader(product, trading_state, product_prev_state)
                 result.update(trader_instance.get_orders())
 
                 logger.print(
@@ -22,9 +54,8 @@ class Trader:
                     f"orders={len(result[product])}"
                 )
 
-
-        trader_data = ""
+        serialized_trader_data = self.serialize_trading_state(trader_data)
         conversions = 0
 
-        logger.flush(trading_state, result, conversions, trader_data)
-        return result, conversions, trader_data
+        logger.flush(trading_state, result, conversions, serialized_trader_data)
+        return result, conversions, serialized_trader_data
