@@ -150,18 +150,3 @@ class Logger:
                 hi = mid - 1
 
         return out
-
-
-logger = Logger()
-
-
-class Trader:
-    def run(self, state: TradingState) -> tuple[dict[Symbol, list[Order]], int, str]:
-        result = {}
-        conversions = 0
-        trader_data = ""
-
-        # TODO: Add logic
-
-        logger.flush(state, result, conversions, trader_data)
-        return result, conversions, trader_data
