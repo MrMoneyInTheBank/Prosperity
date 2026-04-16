@@ -1,3 +1,4 @@
+import typing as t
 from datamodel import Order, TradingState
 from src.config.constants import PreviousTradingState
 from src.traders.product_traders.a_base_trader import BaseTrader, Product
@@ -8,7 +9,7 @@ class AshCoatedOsmiumTrader(BaseTrader):
         self,
         product: Product,
         trading_state: TradingState,
-        prev_state: PreviousTradingState,
+        prev_state: t.Optional[PreviousTradingState],
     ) -> None:
         super().__init__(product, trading_state, prev_state)
 

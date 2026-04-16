@@ -11,7 +11,7 @@ class BaseTrader(ABC):
         self,
         product: Product,
         trading_state: TradingState,
-        prev_state: PreviousTradingState,
+        prev_state: t.Optional[PreviousTradingState],
     ) -> None:
         self.product = product
         self.trading_state = trading_state
