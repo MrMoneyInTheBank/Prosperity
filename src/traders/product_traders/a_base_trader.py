@@ -15,6 +15,7 @@ class BaseTrader(ABC):
     ) -> None:
         self.product = product
         self.trading_state = trading_state
+        self.prev_state = prev_state
 
         self.orders: list[Order] = []
         self.position_limit = POS_LIMITS[self.product]
@@ -62,7 +63,7 @@ class BaseTrader(ABC):
 
     def get_midprice(self) -> t.Optional[float]:
         if not self.best_bid or not self.best_ask:
-            return None
+            return self.prev_state.midprice if self.prev_state else None
 
         midprice: t.Final[float] = (self.best_bid + self.best_ask) / 2
 
