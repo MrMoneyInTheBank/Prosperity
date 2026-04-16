@@ -1,5 +1,6 @@
 import collections.abc as c
 import typing as t
+from dataclasses import dataclass
 from enum import StrEnum
 from pathlib import Path
 
@@ -130,3 +131,9 @@ TRADES_ORDERBOOK_JOIN_RENAMES: t.Final[dict[str, str]] = {
     "bid_price_1": "best_bid",
     "ask_price_1": "best_ask",
 }
+
+
+# Previous trading state
+@dataclass(frozen=True)
+class PreviousTradingState:
+    midprice: float
