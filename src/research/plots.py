@@ -42,10 +42,14 @@ def plot_line_chart(
 ) -> Plot:
     fig, ax = plt.subplots()
     ax.plot(data)
+    ax.axhline(
+        data.mean(), color="orange", linestyle="--", label=f"mean = {data.mean():.2f}"
+    )
 
     ax.set_xlabel(x_title)
     ax.set_ylabel(y_title)
     ax.set_title(title)
+    ax.legend()
 
     plt.close(fig)
 
