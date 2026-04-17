@@ -90,6 +90,7 @@ ORDERBOOK_SCHEMA: t.Final[SchemaType] = {
 ORDERBOOK_DROP_COLS: t.Final[list[str]] = ["day", "product", "profit_and_loss"]
 ORDERBOOK_FEATURES: t.Final[list[str]] = [
     "mid_price",
+    "midprice_dev",
     "spread",
     "imbalance",
     "log_returns",

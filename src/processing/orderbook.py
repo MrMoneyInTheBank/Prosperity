@@ -54,6 +54,9 @@ class OrderBookDataProcessor(BaseProcessor):
             [
                 (pl.col("ask_price_1") - pl.col("bid_price_1")).alias("spread"),
                 ((bid_vol - ask_vol) / (bid_vol + ask_vol)).alias("imbalance"),
+                (pl.col("mid_price") - pl.col("mid_price").mean()).alias(
+                    "midprice_dev"
+                ),
             ]
         )
 
