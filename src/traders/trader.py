@@ -592,6 +592,8 @@ class Trader:
         serialized_trader_data = self.serialize_trading_state(trader_data)
         conversions = 0
 
+        logger.print(serialized_trader_data)
+
         logger.flush(trading_state, result, conversions, serialized_trader_data)
         return result, conversions, serialized_trader_data
 
