@@ -118,7 +118,7 @@ class BaseTrader(ABC):
         self.orders.append(order)
 
     def get_filled_metrics(self) -> t.Tuple[int, int, int, int]:
-        own_trades = self.trading_state.own_trades[self.product]
+        own_trades = self.trading_state.own_trades.get(self.product, [])
         bid_fills, bid_fill_vol = 0, 0
         ask_fills, ask_fill_vol = 0, 0
 
