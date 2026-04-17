@@ -23,18 +23,8 @@ def run_orderbook_analysis(
         ["timestamp", *ORDERBOOK_FEATURES]
     )
 
-    orderbook_stats: t.Final[pl.DataFrame] = orderbook_features_data.select(
-        [
-            pl.col("mid_price").mean().alias("mid_mean"),
-            pl.col("mid_price").var().alias("mid_var"),
-            pl.col("mid_price").std().alias("mid_std"),
-            pl.col("microprice").mean().alias("micro_mean"),
-            pl.col("microprice").var().alias("micro_var"),
-            pl.col("microprice").std().alias("micro_std"),
-            pl.col("log_returns").mean().alias("ret_mean"),
-            pl.col("log_returns").var().alias("ret_var"),
-            pl.col("log_returns").std().alias("ret_std"),
-        ]
+    orderbook_stats: t.Final[pl.DataFrame] = orderbook_features_data.describe().select(
+        pl.all().exclude("timestamp")
     )
 
     orderbook_corrs: t.Final[pl.DataFrame] = orderbook_features_data.select(
