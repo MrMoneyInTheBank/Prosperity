@@ -36,6 +36,7 @@ POS_LIMITS: t.Final[dict[Product, int]] = {
 @dataclass(frozen=True)
 class PreviousTradingState:
     midprice: t.Optional[float]
+    ema: t.Optional[float]
     bid_quotes: int
     ask_quotes: int
     bid_fills: int
