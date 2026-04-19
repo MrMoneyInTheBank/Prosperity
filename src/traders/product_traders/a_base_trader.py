@@ -31,6 +31,9 @@ class BaseTrader(ABC):
         self.bid_quotes = 0
         self.ask_quotes = 0
 
+        self.ema_smoothing_factor = 0.26
+        self.ema = self.calculate_ema()
+
     def get_order_depths(self) -> tuple[dict[int, int], dict[int, int]]:
         order_depth: OrderDepth = self.trading_state.order_depths[self.product]
         buy_orders = {
@@ -132,11 +135,24 @@ class BaseTrader(ABC):
 
         return bid_fills, bid_fill_vol, ask_fills, ask_fill_vol
 
+    def calculate_ema(self) -> t.Optional[float]:
+        if self.midprice is None:
+            return self.prev_state.ema if self.prev_state else None
+
+        if not self.prev_state or self.prev_state.ema is None:
+            return self.midprice
+
+        return (
+            self.ema_smoothing_factor * (self.midprice)
+            + (1 - self.ema_smoothing_factor) * self.prev_state.ema
+        )
+
     def save_current_state(self) -> PreviousTradingState:
         bid_fills, bid_fill_vol, ask_fills, ask_fill_vol = self.get_filled_metrics()
         if not self.prev_state:
             return PreviousTradingState(
                 midprice=self.midprice,
+                ema=self.ema,
                 bid_quotes=self.bid_quotes,
                 ask_quotes=self.ask_quotes,
                 bid_fills=bid_fills,
@@ -147,6 +163,7 @@ class BaseTrader(ABC):
         else:
             return PreviousTradingState(
                 midprice=self.midprice,
+                ema=self.ema,
                 bid_quotes=self.bid_quotes + self.prev_state.bid_quotes,
                 ask_quotes=self.ask_quotes + self.prev_state.ask_quotes,
                 bid_fills=bid_fills + self.prev_state.bid_fills,
