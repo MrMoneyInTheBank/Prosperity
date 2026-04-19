@@ -1,6 +1,6 @@
 # =========================================
 # Auto-generated code for trader.py
-# Generated on 2026-04-17 05:32:23
+# Generated on 2026-04-20 01:30:29
 # =========================================
 
 import json
@@ -41,6 +41,7 @@ POS_LIMITS: t.Final[dict[Product, int]] = {
 @dataclass(frozen=True)
 class PreviousTradingState:
     midprice: t.Optional[float]
+    ema: t.Optional[float]
     bid_quotes: int
     ask_quotes: int
     bid_fills: int
@@ -212,6 +213,9 @@ class BaseTrader(ABC):
         self.bid_quotes = 0
         self.ask_quotes = 0
 
+        self.ema_smoothing_factor = 0.26
+        self.ema = self.calculate_ema()
+
     def get_order_depths(self) -> tuple[dict[int, int], dict[int, int]]:
         order_depth: OrderDepth = self.trading_state.order_depths[self.product]
         buy_orders = {
@@ -313,11 +317,24 @@ class BaseTrader(ABC):
 
         return bid_fills, bid_fill_vol, ask_fills, ask_fill_vol
 
+    def calculate_ema(self) -> t.Optional[float]:
+        if self.midprice is None:
+            return self.prev_state.ema if self.prev_state else None
+
+        if not self.prev_state or self.prev_state.ema is None:
+            return self.midprice
+
+        return (
+            self.ema_smoothing_factor * (self.midprice)
+            + (1 - self.ema_smoothing_factor) * self.prev_state.ema
+        )
+
     def save_current_state(self) -> PreviousTradingState:
         bid_fills, bid_fill_vol, ask_fills, ask_fill_vol = self.get_filled_metrics()
         if not self.prev_state:
             return PreviousTradingState(
                 midprice=self.midprice,
+                ema=self.ema,
                 bid_quotes=self.bid_quotes,
                 ask_quotes=self.ask_quotes,
                 bid_fills=bid_fills,
@@ -328,6 +345,7 @@ class BaseTrader(ABC):
         else:
             return PreviousTradingState(
                 midprice=self.midprice,
+                ema=self.ema,
                 bid_quotes=self.bid_quotes + self.prev_state.bid_quotes,
                 ask_quotes=self.ask_quotes + self.prev_state.ask_quotes,
                 bid_fills=bid_fills + self.prev_state.bid_fills,
@@ -461,25 +479,25 @@ class AshCoatedOsmiumTrader(BaseTrader):
         super().__init__(product, trading_state, prev_state)
 
     def get_orders(self) -> dict[str, list[Order]]:
-        midprice = self.get_midprice()
+        fair_price = self.ema
 
-        if not midprice:
+        if not fair_price:
             return {self.product: []}
 
         # arbitrage
         for ask_price, ask_vol in self.sell_orders.items():
-            if ask_price <= midprice - 1:
+            if ask_price < fair_price - 1:
                 self.bid(ask_price, ask_vol)
                 self.bid_quotes += 1
-            elif ask_price <= midprice and self.initial_position < 0:
+            elif ask_price <= fair_price and self.initial_position < 0:
                 self.bid(ask_price, ask_vol)
                 self.bid_quotes += 1
 
         for bid_price, bid_vol in self.buy_orders.items():
-            if bid_price >= midprice + 1:
+            if bid_price > fair_price + 1:
                 self.ask(bid_price, bid_vol)
                 self.ask_quotes += 1
-            elif bid_price >= midprice and self.initial_position > 0:
+            elif bid_price >= fair_price and self.initial_position > 0:
                 self.ask(bid_price, bid_vol)
                 self.ask_quotes += 1
 
@@ -492,18 +510,18 @@ class AshCoatedOsmiumTrader(BaseTrader):
 
         for bid_price, bid_vol in self.buy_orders.items():
             overbidding_price = bid_price + 1
-            if bid_vol > 1 and overbidding_price < midprice:
+            if bid_vol > 1 and overbidding_price < fair_price:
                 make_bid = max(make_bid, overbidding_price)
                 break
-            elif bid_price < midprice:
+            elif bid_price < fair_price:
                 make_bid = max(make_bid, bid_price)
                 break
         for sell_price, sell_vol in self.sell_orders.items():
             underbidding_price = sell_price - 1
-            if sell_vol > 1 and underbidding_price > midprice:
+            if sell_vol > 1 and underbidding_price > fair_price:
                 make_ask = min(make_ask, underbidding_price)
                 break
-            elif sell_price > midprice:
+            elif sell_price > fair_price:
                 make_ask = min(make_ask, sell_price)
                 break
 
