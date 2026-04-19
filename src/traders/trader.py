@@ -584,6 +584,9 @@ class Trader:
     def serialize_trading_state(self, trader_data: dict[str, dict]) -> str:
         return json.dumps(trader_data)
 
+    def bid(self) -> int:
+        return 15
+
     def run(
         self, trading_state: TradingState
     ) -> t.Tuple[dict[str, list[Order]], int, str]:
