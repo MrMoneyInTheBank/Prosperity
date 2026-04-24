@@ -3,6 +3,7 @@ TRADERS: t.Final[dict[Product, t.Type[BaseTrader]]] = {
     Product.TOMATOES: TomatoTrader,
     Product.ASH_COATED_OSMIUM: AshCoatedOsmiumTrader,
     Product.INTARIAN_PEPPER_ROOT: IntarianPepperRootTrader,
+    Product.HYDROGEL_PACK: HydrogelPackTrader
 }
 
 logger = Logger()
