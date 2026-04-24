@@ -65,6 +65,18 @@ POS_LIMITS: t.Final[dict[Product, int]] = {
     Product.TOMATOES: 80,
     Product.ASH_COATED_OSMIUM: 80,
     Product.INTARIAN_PEPPER_ROOT: 80,
+    Product.HYDROGEL_PACK: 200,
+    Product.VELVETFRUIT_EXTRACT: 200,
+    Product.VEV_4000: 300,
+    Product.VEV_4500: 300,
+    Product.VEV_5000: 300,
+    Product.VEV_5100: 300,
+    Product.VEV_5200: 300,
+    Product.VEV_5300: 300,
+    Product.VEV_5400: 300,
+    Product.VEV_5500: 300,
+    Product.VEV_6000: 300,
+    Product.VEV_6500: 300,
 }
 
 
