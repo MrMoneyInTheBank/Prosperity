@@ -18,7 +18,7 @@ from src.research.results import (
 def prepare_mean_reversion_features(
     df: pl.DataFrame, column: str, skips: t.Literal[0] | t.Literal[5] | t.Literal[10]
 ) -> pl.DataFrame:
-    global_mean: float = df[column].mean()
+    global_mean: float = t.cast(float, df[column].mean())
     lagged_df = df[::skips] if skips != 0 else df
 
     if "timestamp" not in df.columns or column not in df.columns:
