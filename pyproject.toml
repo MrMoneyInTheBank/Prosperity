@@ -27,7 +27,7 @@ build-backend = "hatchling.build"
 packages = ["src"]
 
 [tool.uv.sources]
-prosperity4btest = { path = "../imc-prosperity-4-backtester" }
+prosperity4btest = { path = "../imc-prosperity-4-backtester", editable = true }
 
 [tool.mypy]
 explicit_package_bases = true
