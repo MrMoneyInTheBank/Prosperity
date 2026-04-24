@@ -1,5 +1,5 @@
-import typing as t
 import json
+import typing as t
 
 from datamodel import (
     Listing,

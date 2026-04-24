@@ -1,5 +1,6 @@
 import json
 import typing as t
+
 import jsonpickle  # type: ignore[import-untyped]
 
 # Type aliases

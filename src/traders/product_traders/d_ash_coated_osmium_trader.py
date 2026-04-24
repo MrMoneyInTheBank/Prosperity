@@ -1,5 +1,6 @@
 import math
 import typing as t
+
 from datamodel import Order, TradingState
 from src.config.constants import PreviousTradingState
 from src.traders.product_traders.a_base_trader import BaseTrader, Product

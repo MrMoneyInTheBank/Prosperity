@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 from operator import itemgetter
 
 from datamodel import Order, OrderDepth, TradingState
-from src.config.constants import POS_LIMITS, Product, PreviousTradingState
+from src.config.constants import POS_LIMITS, PreviousTradingState, Product
 
 
 class BaseTrader(ABC):
