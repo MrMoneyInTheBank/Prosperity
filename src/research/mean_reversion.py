@@ -16,7 +16,7 @@ from src.research.results import (
 
 
 def prepare_mean_reversion_features(
-    df: pl.DataFrame, column: str, skips: t.Literal[0] | t.Literal[5] | t.Literal[10]
+    df: pl.DataFrame, column: str, skips: t.Literal[0, 5, 10]
 ) -> pl.DataFrame:
     global_mean: float = t.cast(float, df[column].mean())
     lagged_df = df[::skips] if skips != 0 else df
@@ -32,7 +32,9 @@ def prepare_mean_reversion_features(
     ).drop_nulls(subset=["impending_change"])
 
 
-def run_regression(reg_df: pl.DataFrame, skips: int) -> RegressionResult:
+def run_regression(
+    reg_df: pl.DataFrame, skips: t.Literal[0, 5, 10]
+) -> RegressionResult:
     X = reg_df["deviation_from_mean"].to_numpy()
     y = reg_df["impending_change"].to_numpy()
 
