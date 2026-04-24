@@ -1,6 +1,6 @@
 # =========================================
 # Auto-generated code for trader.py
-# Generated on 2026-04-20 02:15:36
+# Generated on 2026-04-24 19:19:51
 # =========================================
 
 import json
@@ -28,6 +28,18 @@ class Product(StrEnum):
     TOMATOES = "TOMATOES"
     ASH_COATED_OSMIUM = "ASH_COATED_OSMIUM"
     INTARIAN_PEPPER_ROOT = "INTARIAN_PEPPER_ROOT"
+    HYDROGEL_PACK = "HYDROGEL_PACK"
+    VELVETFRUIT_EXTRACT = "VELVETFRUIT_EXTRACT"
+    VEV_4000 = "VEV_4000"
+    VEV_4500 = "VEV_4500"
+    VEV_5000 = "VEV_5000"
+    VEV_5100 = "VEV_5100"
+    VEV_5200 = "VEV_5200"
+    VEV_5300 = "VEV_5300"
+    VEV_5400 = "VEV_5400"
+    VEV_5500 = "VEV_5500"
+    VEV_6000 = "VEV_6000"
+    VEV_6500 = "VEV_6500"
 
 
 POS_LIMITS: t.Final[dict[Product, int]] = {
@@ -35,6 +47,18 @@ POS_LIMITS: t.Final[dict[Product, int]] = {
     Product.TOMATOES: 80,
     Product.ASH_COATED_OSMIUM: 80,
     Product.INTARIAN_PEPPER_ROOT: 80,
+    Product.HYDROGEL_PACK: 200,
+    Product.VELVETFRUIT_EXTRACT: 200,
+    Product.VEV_4000: 300,
+    Product.VEV_4500: 300,
+    Product.VEV_5000: 300,
+    Product.VEV_5100: 300,
+    Product.VEV_5200: 300,
+    Product.VEV_5300: 300,
+    Product.VEV_5400: 300,
+    Product.VEV_5500: 300,
+    Product.VEV_6000: 300,
+    Product.VEV_6500: 300,
 }
 
 
@@ -552,11 +576,76 @@ class IntarianPepperRootTrader(BaseTrader):
         return {self.product: self.orders}
 
 
+class HydrogelPackTrader(BaseTrader):
+    def __init__(
+        self,
+        product: Product,
+        trading_state: TradingState,
+        prev_state: t.Optional[PreviousTradingState],
+    ) -> None:
+        super().__init__(product, trading_state, prev_state)
+
+    def get_orders(self) -> dict[str, list[Order]]:
+        fair_price = self.ema
+
+        if not fair_price:
+            return {self.product: []}
+
+        # arbitrage
+        for ask_price, ask_vol in self.sell_orders.items():
+            if ask_price < fair_price - 1:
+                self.bid(ask_price, ask_vol)
+                self.bid_quotes += 1
+            elif ask_price <= fair_price and self.initial_position < 0:
+                self.bid(ask_price, ask_vol)
+                self.bid_quotes += 1
+
+        for bid_price, bid_vol in self.buy_orders.items():
+            if bid_price > fair_price + 1:
+                self.ask(bid_price, bid_vol)
+                self.ask_quotes += 1
+            elif bid_price >= fair_price and self.initial_position > 0:
+                self.ask(bid_price, bid_vol)
+                self.ask_quotes += 1
+
+        # market making
+        if not self.buy_anchor or not self.ask_anchor:
+            return {self.product: self.orders}
+
+        make_bid = math.floor(self.buy_anchor + 1)
+        make_ask = math.ceil(self.ask_anchor - 1)
+
+        for bid_price, bid_vol in self.buy_orders.items():
+            overbidding_price = bid_price + 1
+            if bid_vol > 1 and overbidding_price < fair_price:
+                make_bid = max(make_bid, overbidding_price)
+                break
+            elif bid_price < fair_price:
+                make_bid = max(make_bid, bid_price)
+                break
+        for sell_price, sell_vol in self.sell_orders.items():
+            underbidding_price = sell_price - 1
+            if sell_vol > 1 and underbidding_price > fair_price:
+                make_ask = min(make_ask, underbidding_price)
+                break
+            elif sell_price > fair_price:
+                make_ask = min(make_ask, sell_price)
+                break
+
+        self.bid(make_bid, self.max_allowed_buy_volume)
+        self.ask(make_ask, self.max_allowed_sell_volume)
+        self.bid_quotes += 1
+        self.ask_quotes += 1
+
+        return {self.product: self.orders}
+
+
 TRADERS: t.Final[dict[Product, t.Type[BaseTrader]]] = {
     Product.EMERALDS: EmeraldTrader,
     Product.TOMATOES: TomatoTrader,
     Product.ASH_COATED_OSMIUM: AshCoatedOsmiumTrader,
     Product.INTARIAN_PEPPER_ROOT: IntarianPepperRootTrader,
+    Product.HYDROGEL_PACK: HydrogelPackTrader,
 }
 
 logger = Logger()
@@ -583,9 +672,6 @@ class Trader:
 
     def serialize_trading_state(self, trader_data: dict[str, dict]) -> str:
         return json.dumps(trader_data)
-
-    def bid(self) -> int:
-        return 15
 
     def run(
         self, trading_state: TradingState
