@@ -6,9 +6,9 @@ from scipy.stats import norm
 
 
 class BlackScholesCall:
-    def __init__(self, r: float, T: float):
+    def __init__(self, r: float, T_days: float):
         self.r = r  # risk-free rate
-        self.T = T  # time to expiry (in years)
+        self.T = T_days / 365  # time to expiry (in years)
 
     def _d1_d2(self, K: float, S: float, sigma: float) -> tuple[float, float]:
         if sigma <= 0 or self.T <= 0:
