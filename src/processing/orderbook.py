@@ -1,4 +1,5 @@
 import math
+import typing as t
 
 import polars as pl
 
@@ -17,7 +18,12 @@ class OrderBookDataset(BaseDataset):
     schema = ORDERBOOK_SCHEMA
     product_key = "product"
 
-    def for_product(self, product: str) -> "OrderBookDataProcessor":
+    def for_product(self, product: str | t.Literal["VEV_"]) -> "OrderBookDataProcessor":
+        if product == "VEV_":
+            return OrderBookDataProcessor(
+                self._raw_data.filter(pl.col("product").str.starts_with("VEV_")),
+                product="VELVETFRUIT_OPTIONS",
+            )
         if product not in self.products():
             raise KeyError(f"{product} not found in {self.products()}")
         return OrderBookDataProcessor(
