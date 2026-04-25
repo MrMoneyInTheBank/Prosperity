@@ -12,6 +12,7 @@ dependencies = [
     "matplotlib>=3.10.8",
     "polars>=1.39.2",
     "prosperity4btest",
+    "scipy-stubs>=1.17.1.4",
     "statsmodels>=0.14.6",
 ]
 
