@@ -4,6 +4,7 @@ import typing as t
 import polars as pl
 
 from src.config.constants import (
+    OPTIONS_ORDERBOOK_DROP_COLS,
     ORDERBOOK_DROP_COLS,
     ORDERBOOK_SCHEMA,
     AggFnType,
@@ -46,10 +47,25 @@ class OrderBookDataProcessor(BaseProcessor):
         self.product = product
 
     def clean(self) -> "OrderBookDataProcessor":
-        self._data = self._data.drop(ORDERBOOK_DROP_COLS)
+        if self.product == "VELVETFRUIT_OPTIONS":
+            self._data = self._data.drop(OPTIONS_ORDERBOOK_DROP_COLS)
+        else:
+            self._data = self._data.drop(ORDERBOOK_DROP_COLS)
         self._data = self._data.filter(
             (pl.col("mid_price").is_not_null()) & (pl.col("mid_price") != 0)
         )
+        return self
+
+    def add_strikes_col(self) -> "OrderBookDataProcessor":
+        if self.product != "VELVETFRUIT_OPTIONS":
+            raise ValueError(
+                f"Cannot add strikes to non option product: {self.product}"
+            )
+
+        self._data = self._data.with_columns(
+            pl.col("product").str.slice(-4).cast(int).alias("strike_price")
+        )
+
         return self
 
     def add_microstructure_features(self) -> "OrderBookDataProcessor":
