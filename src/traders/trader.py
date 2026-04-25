@@ -1,6 +1,6 @@
 # =========================================
 # Auto-generated code for trader.py
-# Generated on 2026-04-24 19:19:51
+# Generated on 2026-04-25 04:06:24
 # =========================================
 
 import json
@@ -586,56 +586,20 @@ class HydrogelPackTrader(BaseTrader):
         super().__init__(product, trading_state, prev_state)
 
     def get_orders(self) -> dict[str, list[Order]]:
-        fair_price = self.ema
-
-        if not fair_price:
-            return {self.product: []}
-
-        # arbitrage
-        for ask_price, ask_vol in self.sell_orders.items():
-            if ask_price < fair_price - 1:
-                self.bid(ask_price, ask_vol)
-                self.bid_quotes += 1
-            elif ask_price <= fair_price and self.initial_position < 0:
-                self.bid(ask_price, ask_vol)
-                self.bid_quotes += 1
-
-        for bid_price, bid_vol in self.buy_orders.items():
-            if bid_price > fair_price + 1:
-                self.ask(bid_price, bid_vol)
-                self.ask_quotes += 1
-            elif bid_price >= fair_price and self.initial_position > 0:
-                self.ask(bid_price, bid_vol)
-                self.ask_quotes += 1
-
-        # market making
-        if not self.buy_anchor or not self.ask_anchor:
+        if self.midprice is None or self.ema is None:
             return {self.product: self.orders}
 
-        make_bid = math.floor(self.buy_anchor + 1)
-        make_ask = math.ceil(self.ask_anchor - 1)
-
-        for bid_price, bid_vol in self.buy_orders.items():
-            overbidding_price = bid_price + 1
-            if bid_vol > 1 and overbidding_price < fair_price:
-                make_bid = max(make_bid, overbidding_price)
-                break
-            elif bid_price < fair_price:
-                make_bid = max(make_bid, bid_price)
-                break
-        for sell_price, sell_vol in self.sell_orders.items():
-            underbidding_price = sell_price - 1
-            if sell_vol > 1 and underbidding_price > fair_price:
-                make_ask = min(make_ask, underbidding_price)
-                break
-            elif sell_price > fair_price:
-                make_ask = min(make_ask, sell_price)
-                break
-
-        self.bid(make_bid, self.max_allowed_buy_volume)
-        self.ask(make_ask, self.max_allowed_sell_volume)
-        self.bid_quotes += 1
-        self.ask_quotes += 1
+        if self.midprice > self.ema:
+            if self.prev_state and self.prev_state.midprice is not None:
+                self.ask(math.ceil(self.midprice), 30)
+        elif self.midprice < self.ema:
+            if self.prev_state and self.prev_state.midprice is not None:
+                self.bid(math.floor(self.midprice), 30)
+        elif self.midprice == self.ema:
+            if self.initial_position > 0:
+                self.ask(math.ceil(self.midprice), self.max_allowed_sell_volume)
+            elif self.initial_position > 0:
+                self.bid(math.floor(self.midprice), self.max_allowed_buy_volume)
 
         return {self.product: self.orders}
 
