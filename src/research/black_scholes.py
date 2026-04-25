@@ -59,12 +59,40 @@ class BlackScholesCall:
         S: float,
         sigma_low: float = 1e-6,
         sigma_high: float = 5.0,
+        tol: float = 1e-6,
+        max_iter: int = 20,
     ) -> t.Optional[float]:
 
+        # --- Arbitrage bounds ---
         intrinsic = max(0.0, S - K * m.exp(-self.r * self.T))
         if not (intrinsic <= C_market <= S):
             return None
 
+        # --- Initial guess (critical for speed) ---
+        sigma = m.sqrt(2 * m.pi / self.T) * (C_market / S)
+        sigma = min(max(sigma, 1e-4), 2.0)
+
+        # --- Newton-Raphson ---
+        for _ in range(max_iter):
+            price = self.call_price(K, S, sigma)
+            diff = price - C_market
+
+            if abs(diff) < tol:
+                return sigma
+
+            v = self.vega(K, S, sigma)
+
+            # Avoid divide-by-zero / flat vega
+            if v < 1e-8:
+                break
+
+            sigma -= diff / v
+
+            # Keep sigma in sane bounds
+            if sigma <= 0 or sigma > 5:
+                break
+
+        # --- Fallback to Brent (robust) ---
         def f(sigma: float) -> float:
             return self.call_price(K, S, sigma) - C_market
 
