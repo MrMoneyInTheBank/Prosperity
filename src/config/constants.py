@@ -26,6 +26,7 @@ SchemaType = dict[str, type[pl.DataType]]
 # Directories
 ROOT_DIR: t.Final[Path] = find_project_root(Path(__file__).resolve())
 DATA_DIR: t.Final[Path] = ROOT_DIR / "data"
+CACHE_DIR: t.Final[Path] = ROOT_DIR / "cache"
 SRC_DIR: t.Final[Path] = ROOT_DIR / "src"
 TEMPLATES_DIR: t.Final[Path] = SRC_DIR / "templates"
 TRADERS_DIR: t.Final[Path] = SRC_DIR / "traders"
@@ -113,6 +114,7 @@ ORDERBOOK_SCHEMA: t.Final[SchemaType] = {
 
 ORDERBOOK_DROP_COLS: t.Final[list[str]] = ["day", "product", "profit_and_loss"]
 OPTIONS_ORDERBOOK_DROP_COLS: t.Final[list[str]] = ["day", "profit_and_loss"]
+
 ORDERBOOK_FEATURES: t.Final[list[str]] = [
     "mid_price",
     "midprice_dev",
@@ -123,6 +125,14 @@ ORDERBOOK_FEATURES: t.Final[list[str]] = [
     "microprice",
     "microprice_dev",
     "depth",
+]
+OPTIONS_ORDERBOOK_FEATURES: t.Final[list[str]] = [
+    "timestamp",
+    "strike_price",
+    "spot_price",
+    "mid_price",
+    "log_moneyness",
+    "IV",
 ]
 
 ORDERBOOK_LEVELS: t.Final[int] = 3
