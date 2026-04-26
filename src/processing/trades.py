@@ -1,3 +1,5 @@
+import typing as t
+
 import polars as pl
 
 from src.config.constants import (
@@ -5,6 +7,7 @@ from src.config.constants import (
     TRADES_ORDERBOOK_JOIN_COLS,
     TRADES_ORDERBOOK_JOIN_RENAMES,
     TRADES_SCHEMA,
+    TRADES_SIDES_COLS,
     Order,
 )
 from src.processing.base_dataset import BaseDataset
@@ -15,7 +18,12 @@ class TradesDataset(BaseDataset):
     schema = TRADES_SCHEMA
     product_key = "symbol"
 
-    def for_product(self, product: str) -> "TradesDataProcessor":
+    def for_product(self, product: str | t.Literal["VEV_"]) -> "TradesDataProcessor":
+        if product == "VEV_":
+            return TradesDataProcessor(
+                self._raw_data.filter(pl.col("symbol").str.starts_with("VEV_")),
+                product="VELVETFRUIT_OPTIONS",
+            )
         if product not in self.products():
             raise KeyError(f"{product} not found in {self.products()}")
         return TradesDataProcessor(
@@ -29,8 +37,12 @@ class TradesDataProcessor(BaseProcessor):
         self.product = product
         self._orderbook_joined = False
 
-    def clean(self) -> "TradesDataProcessor":
-        self._data = self._data.drop(TRADES_DROP_COLS)
+    def clean(self, keep_sides: bool = False) -> "TradesDataProcessor":
+        self._data = (
+            self._data.drop(TRADES_DROP_COLS)
+            if not keep_sides
+            else self._data.drop(TRADES_DROP_COLS - TRADES_SIDES_COLS)
+        )
         return self
 
     def add_time_features(self) -> "TradesDataProcessor":
