@@ -22,7 +22,10 @@ class BlackScholesCall:
 
         return d1, d2
 
-    def call_price(self, K: float, S: float, sigma: float) -> float:
+    def call_price(self, K: float, S: float, sigma: t.Optional[float]) -> t.Optional[float]:
+        if sigma is None:
+            return None
+            
         d1, d2 = self._d1_d2(K, S, sigma)
 
         return S * norm.cdf(d1) - K * m.exp(-self.r * self.T) * norm.cdf(d2)
