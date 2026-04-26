@@ -170,7 +170,10 @@ TRADES_SCHEMA: t.Final[SchemaType] = {
     "quantity": pl.Int64,
 }
 
-TRADES_DROP_COLS: t.Final[list[str]] = ["buyer", "seller", "symbol", "currency"]
+TRADES_DROP_COLS: t.Final[frozenset[str]] = frozenset(
+    ["buyer", "seller", "symbol", "currency"]
+)
+TRADES_SIDES_COLS: t.Final[frozenset[str]] = frozenset(["buyer", "seller"])
 TRADES_ORDERBOOK_JOIN_COLS: t.Final[list[str]] = [
     "timestamp",
     "bid_price_1",
