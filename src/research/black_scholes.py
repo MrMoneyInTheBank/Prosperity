@@ -6,7 +6,7 @@ from scipy.stats import norm
 
 
 class BlackScholesCall:
-    def __init__(self, r: float, T_days: float):
+    def __init__(self, r: float = 0, T_days: float = 5):
         self.r = r  # risk-free rate
         self.T = T_days / 365  # time to expiry (in years)
 
