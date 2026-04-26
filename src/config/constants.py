@@ -59,6 +59,20 @@ class Product(StrEnum):
     VEV_6500 = "VEV_6500"
 
 
+OPTIONS_CONTRACTS: t.Final[list[Product]] = [
+    Product.VEV_4000,
+    Product.VEV_4500,
+    Product.VEV_5000,
+    Product.VEV_5100,
+    Product.VEV_5200,
+    Product.VEV_5300,
+    Product.VEV_5400,
+    Product.VEV_5500,
+    Product.VEV_6000,
+    Product.VEV_6500,
+]
+
+
 # Position limits
 
 POS_LIMITS: t.Final[dict[Product, int]] = {

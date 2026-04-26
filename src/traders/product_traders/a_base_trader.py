@@ -1,12 +1,11 @@
 import typing as t
-from abc import ABC, abstractmethod
 from operator import itemgetter
 
 from datamodel import Order, OrderDepth, TradingState
 from src.config.constants import POS_LIMITS, PreviousTradingState, Product
 
 
-class BaseTrader(ABC):
+class BaseTrader:
     def __init__(
         self,
         product: Product,
@@ -172,6 +171,5 @@ class BaseTrader(ABC):
                 ask_fill_vol=ask_fill_vol + self.prev_state.ask_fill_vol,
             )
 
-    @abstractmethod
     def get_orders(self) -> dict[str, list[Order]]:
-        raise NotImplementedError()
+        return {self.product: []}
