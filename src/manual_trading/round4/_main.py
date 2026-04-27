@@ -53,19 +53,8 @@ def steps_for_weeks(weeks: float) -> int:
 ### KO: knockout put option
 
 
-class Product(StrEnum):
+class Underlying(StrEnum):
     AC = "AETHER_CRYSTAL"
-    AC_50_C = "AC_50_C"
-    AC_50_C_2 = "AC_50_C_2"
-    AC_60_C = "AC_60_C"
-    AC_35_P = "AC_35_P"
-    AC_40_P = "AC_40_P"
-    AC_45_P = "AC_45_P"
-    AC_50_P = "AC_50_P"
-    AC_50_P_2 = "AC_50_P_2"
-    AC_50_CO = "AC_50_C0"
-    AC_40_BP = "AC_50_BP"
-    AC_45_KO = "AC_45_KO"
 
 
 class OptionSide(StrEnum):
@@ -134,6 +123,8 @@ class KnockOutPut(Option):
     def _ticker_suffix(self) -> str:
         return "KO"
 
+
+Product = Union[Underlying, Option]
 
 ### END OF PRODUCTS
 
