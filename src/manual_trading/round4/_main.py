@@ -1,5 +1,26 @@
 from dataclasses import dataclass
 from enum import StrEnum
+### CONSTANTS
+
+TRADING_DAYS_PER_YEAR: Final[int] = 252
+STEPS_PER_DAY: Final[int] = 4
+STEPS_PER_YEAR: Final[int] = STEPS_PER_DAY * TRADING_DAYS_PER_YEAR
+
+
+### END OF CONSTANTS
+
+### UTILITY FUNCTIONS
+
+
+def weeks_to_years(weeks: float) -> float:
+    return (weeks * 5) / TRADING_DAYS_PER_YEAR
+
+
+def steps_for_weeks(weeks: float) -> int:
+    return int(round(weeks * 5 * STEPS_PER_DAY))
+
+
+### END OF UTILITY FUNCTIONS
 
 ### PRODUCTS
 
