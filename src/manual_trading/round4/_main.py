@@ -310,6 +310,33 @@ def get_vanilla_options_sim_res(
     )
 
 
+def get_simulation_results(
+    price_paths: list[npt.NDArray], market: Market
+) -> list[SimResults]:
+    last_prices: Final[npt.NDArray] = np.array([pp[-1] for pp in price_paths])
+    two_week_prices: Final[npt.NDArray] = np.array([pp[40] for pp in price_paths])
+
+    results = []
+    for product in market.quotes.keys():
+        if isinstance(product, Underlying):
+            results.append(get_underlying_sim_res(market, product, last_prices))
+        elif isinstance(product, VanillaOption):
+            if product.TTE_weeks == 2:
+                results.append(
+                    get_vanilla_options_sim_res(market, product, two_week_prices),
+                )
+
+            else:
+                results.append(
+                    get_vanilla_options_sim_res(market, product, last_prices),
+                )
+
+        else:
+            continue
+
+    return results
+
+
 if __name__ == "__main__":
     market = build_market(RAW_QUOTES)
     print_market_state(market)
