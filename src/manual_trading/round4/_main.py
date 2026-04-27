@@ -255,7 +255,7 @@ class SimResults:
 
 
 def generate_price_paths(
-    initial_price: float, variance: float, num_paths: int, steps: int
+    initial_price: float, vol: float, num_paths: int, steps: int
 ) -> list[npt.NDArray]:
     paths: list[npt.NDArray] = []
 
@@ -265,7 +265,7 @@ def generate_price_paths(
 
         for t in range(steps):
             Z: float = np.random.normal()
-            log_return: float = -0.5 * variance**2 + Z * variance
+            log_return: float = -0.5 * vol**2 + Z * vol
 
             path[t + 1] = path[t] * np.exp(log_return)
 
