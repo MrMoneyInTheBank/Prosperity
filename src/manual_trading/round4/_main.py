@@ -3,14 +3,22 @@ from enum import StrEnum
 from rich.table import Table
 from rich.console import Console
 from types import MappingProxyType
-from typing import Final, Literal, Mapping, Union
+from typing import Final, Literal, Mapping, Optional, Union
+
+import numpy as np
+import numpy.typing as npt
 
 ### CONSTANTS
 
 TRADING_DAYS_PER_YEAR: Final[int] = 252
+TRADING_DAYS_PER_WEEK: Final[int] = 5
 STEPS_PER_DAY: Final[int] = 4
 STEPS_PER_YEAR: Final[int] = STEPS_PER_DAY * TRADING_DAYS_PER_YEAR
+STEPS_PER_THREE_WEEKS: Final[int] = STEPS_PER_DAY * TRADING_DAYS_PER_WEEK * 3
 
+
+AC_VARIANCE_ANNUAL: Final[float] = 2.51
+AC_VARIANCE_PER_STEP: Final[float] = AC_VARIANCE_ANNUAL * np.sqrt(1 / STEPS_PER_YEAR)
 
 ### END OF CONSTANTS
 
