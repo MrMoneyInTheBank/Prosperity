@@ -331,6 +331,26 @@ def run_black_scholes(
     return res
 
 
+def print_black_scholes_result(results: list[BlackSholesResults]) -> None:
+    table = Table(title="Simulation Results")
+    table.add_column("Product", style="bold", justify="center")
+    table.add_column("Fair Value", justify="center")
+    table.add_column("Delta", justify="center")
+    table.add_column("Gamma", justify="center")
+    table.add_column("Vega", justify="center")
+
+    for res in results:
+        table.add_row(
+            str(res.option),
+            f"{res.fair_value:.4f}",
+            f"{res.delta:.4f}",
+            f"{res.gamma:.4f}",
+            f"{res.vega:.4f}",
+        )
+
+    Console().print(table)
+
+
 ### END OF BLACK SCHOLES
 
 ### SIMULATION
