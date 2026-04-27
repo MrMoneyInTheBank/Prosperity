@@ -298,6 +298,14 @@ class BlackScholesPut(BlackScholes):
         return -norm.cdf(d1)
 
 
+@dataclass
+class BlackSholesResults:
+    option: VanillaOption
+    fair_value: float
+    delta: float
+    gamma: float
+    vega: float
+
 ### END OF BLACK SCHOLES
 
 ### SIMULATION
