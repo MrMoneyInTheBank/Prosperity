@@ -1,12 +1,15 @@
+import math as m
 from dataclasses import dataclass
 from enum import StrEnum
 from rich.table import Table
 from rich.console import Console
 from types import MappingProxyType
 from typing import Final, Literal, Mapping, Optional, Union
+from abc import ABC, abstractmethod
 
 import numpy as np
 import numpy.typing as npt
+from scipy.stats import norm
 
 ### CONSTANTS
 
@@ -235,6 +238,38 @@ def get_midprice(market: Market, product: Product) -> float:
 
 
 ### END OF MARKET
+
+### BLACK SCHOLES
+
+
+class BlackScholes(ABC):
+    def __init__(self, sigma: float = AC_VOL_ANNUAL, r: float = 0):
+        self.sigma = sigma
+        self.r = r
+
+    def _d1_d2(self, K: float, S: float, T: float) -> tuple[float, float]:
+        sqrtT = m.sqrt(T)
+
+        d1 = (m.log(S / K) + (self.r + 0.5 * self.sigma**2) * T) / (self.sigma * sqrtT)
+
+        d2 = d1 - self.sigma * sqrtT
+
+        return d1, d2
+
+    def gamma(self, K: float, S: float, T: float) -> float:
+        d1, _ = self._d1_d2(K, S, T)
+        return norm.pdf(d1) / (S * self.sigma * m.sqrt(T))
+
+    def vega(self, K: float, S: float, T: float) -> float:
+        d1, _ = self._d1_d2(K, S, T)
+        return S * norm.pdf(d1) * m.sqrt(T)
+
+    @abstractmethod
+    def price(self, K: float, S: float, T: float) -> float:
+        raise NotImplementedError()
+
+
+### END OF BLACK SCHOLES
 
 ### SIMULATION
 
