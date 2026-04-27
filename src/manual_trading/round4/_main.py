@@ -126,6 +126,18 @@ class KnockOutPut(Option):
 
 Product = Union[Underlying, Option]
 
+AC_50_C = VanillaOption(strike_price=50, side=OptionSide.CALL)
+AC_50_C_2 = VanillaOption(strike_price=50, side=OptionSide.CALL, TTE_weeks=2)
+AC_60_C = VanillaOption(strike_price=60, side=OptionSide.CALL)
+AC_35_P = VanillaOption(strike_price=35, side=OptionSide.PUT)
+AC_40_P = VanillaOption(strike_price=40, side=OptionSide.PUT)
+AC_45_P = VanillaOption(strike_price=45, side=OptionSide.PUT)
+AC_50_P = VanillaOption(strike_price=50, side=OptionSide.PUT)
+AC_50_P_2 = VanillaOption(strike_price=50, side=OptionSide.PUT, TTE_weeks=2)
+AC_50_CO = ChooserOption(strike_price=50, decision_time_weeks=2)
+AC_40_BP = BinaryPut(strike_price=40, payoff=10)
+AC_45_KO = KnockOutPut(strike_price=45, barrier_price=35)
+
 ### END OF PRODUCTS
 
 
