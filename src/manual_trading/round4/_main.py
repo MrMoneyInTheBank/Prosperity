@@ -18,7 +18,6 @@ STEPS_PER_THREE_WEEKS: Final[int] = STEPS_PER_DAY * TRADING_DAYS_PER_WEEK * 3
 
 
 AC_VOL_ANNUAL: Final[float] = 2.51
-AC_VOL_PER_STEP: Final[float] = AC_VOL_ANNUAL * np.sqrt(1 / STEPS_PER_YEAR)
 
 ### END OF CONSTANTS
 
@@ -255,23 +254,25 @@ class SimResults:
 
 
 def generate_price_paths(
-    initial_price: float, vol: float, num_paths: int, steps: int
-) -> list[npt.NDArray]:
-    paths: list[npt.NDArray] = []
+    initial_price: float,
+    vol: float,
+    num_paths: int,
+    steps: int,
+) -> npt.NDArray[np.float64]:
+    dt = 1 / STEPS_PER_YEAR
 
-    for _ in range(num_paths):
-        path: npt.NDArray = np.zeros(steps + 1)
-        path[0] = initial_price
+    Z = np.random.normal(size=(num_paths, steps))
 
-        for t in range(steps):
-            Z: float = np.random.normal()
-            log_return: float = -0.5 * vol**2 + Z * vol
+    log_returns = (-0.5 * vol**2) * dt + vol * np.sqrt(dt) * Z
 
-            path[t + 1] = path[t] * np.exp(log_return)
+    log_price_paths = np.cumsum(log_returns, axis=1)
 
-        paths.append(path)
+    price_paths = initial_price * np.exp(log_price_paths)
 
-    return paths
+    initial_column = np.full((num_paths, 1), initial_price)
+    price_paths = np.hstack([initial_column, price_paths])
+
+    return price_paths
 
 
 def get_underlying_sim_res(
@@ -368,7 +369,7 @@ if __name__ == "__main__":
     AC_initial_price: Final[float] = get_midprice(market, Underlying.AC)
     price_paths: Final[list[npt.NDArray]] = generate_price_paths(
         AC_initial_price,
-        AC_VOL_PER_STEP,
+        AC_VOL_ANNUAL,
         num_paths=10000,
         steps=STEPS_PER_THREE_WEEKS,
     )
