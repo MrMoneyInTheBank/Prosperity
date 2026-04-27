@@ -17,8 +17,8 @@ STEPS_PER_YEAR: Final[int] = STEPS_PER_DAY * TRADING_DAYS_PER_YEAR
 STEPS_PER_THREE_WEEKS: Final[int] = STEPS_PER_DAY * TRADING_DAYS_PER_WEEK * 3
 
 
-AC_VARIANCE_ANNUAL: Final[float] = 2.51
-AC_VARIANCE_PER_STEP: Final[float] = AC_VARIANCE_ANNUAL * np.sqrt(1 / STEPS_PER_YEAR)
+AC_VOL_ANNUAL: Final[float] = 2.51
+AC_VOL_PER_STEP: Final[float] = AC_VOL_ANNUAL * np.sqrt(1 / STEPS_PER_YEAR)
 
 ### END OF CONSTANTS
 
@@ -368,7 +368,7 @@ if __name__ == "__main__":
     AC_initial_price: Final[float] = get_midprice(market, Underlying.AC)
     price_paths: Final[list[npt.NDArray]] = generate_price_paths(
         AC_initial_price,
-        AC_VARIANCE_PER_STEP,
+        AC_VOL_PER_STEP,
         num_paths=10000,
         steps=STEPS_PER_THREE_WEEKS,
     )
