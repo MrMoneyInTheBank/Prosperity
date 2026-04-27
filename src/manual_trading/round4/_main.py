@@ -157,19 +157,19 @@ AC_45_KO = KnockOutPut(strike_price=45, barrier_price=35)
 ### MARKET
 
 
-@dataclass
+@dataclass(frozen=True)
 class Bid:
     price: float
     quantity: int
 
 
-@dataclass
+@dataclass(frozen=True)
 class Ask:
     price: float
     quantity: int
 
 
-@dataclass
+@dataclass(frozen=True)
 class Quote:
     bid: Bid
     ask: Ask
