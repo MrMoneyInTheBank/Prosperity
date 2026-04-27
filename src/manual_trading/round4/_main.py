@@ -500,5 +500,13 @@ if __name__ == "__main__":
         steps=steps_for_weeks(3),
     )
 
-    results = get_simulation_results(price_paths, market)
-    print_simulation_results(results)
+    simulation_results: Final[list[SimResults]] = get_simulation_results(
+        price_paths, market
+    )
+    black_scholes_results: Final[list[BlackSholesResults]] = run_black_scholes(
+        AC_initial_price,
+        [p for p in market.quotes.keys() if isinstance(p, VanillaOption)],
+    )
+
+    print_simulation_results(simulation_results)
+    print_black_scholes_result(black_scholes_results)
