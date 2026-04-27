@@ -14,7 +14,6 @@ TRADING_DAYS_PER_YEAR: Final[int] = 252
 TRADING_DAYS_PER_WEEK: Final[int] = 5
 STEPS_PER_DAY: Final[int] = 4
 STEPS_PER_YEAR: Final[int] = STEPS_PER_DAY * TRADING_DAYS_PER_YEAR
-STEPS_PER_THREE_WEEKS: Final[int] = STEPS_PER_DAY * TRADING_DAYS_PER_WEEK * 3
 
 
 AC_VOL_ANNUAL: Final[float] = 2.51
@@ -371,7 +370,7 @@ if __name__ == "__main__":
         AC_initial_price,
         AC_VOL_ANNUAL,
         num_paths=10000,
-        steps=STEPS_PER_THREE_WEEKS,
+        steps=steps_for_weeks(3),
     )
 
     results = get_simulation_results(price_paths, market)
