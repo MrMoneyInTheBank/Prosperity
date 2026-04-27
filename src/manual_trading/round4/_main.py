@@ -269,6 +269,21 @@ class BlackScholes(ABC):
         raise NotImplementedError()
 
 
+class BlackScholesCall(BlackScholes):
+    def __init__(self, sigma: float = AC_VOL_ANNUAL, r: float = 0):
+        super().__init__(sigma, r)
+
+    def price(self, K: float, S: float, T: float) -> float:
+
+        d1, d2 = self._d1_d2(K, S, T)
+
+        return S * norm.cdf(d1) - K * m.exp(-self.r * T) * norm.cdf(d2)
+
+    def delta(self, K: float, S: float, T: float) -> float:
+        d1, _ = self._d1_d2(K, S, T)
+        return norm.cdf(d1)
+
+
 ### END OF BLACK SCHOLES
 
 ### SIMULATION
