@@ -288,6 +288,28 @@ def get_underlying_sim_res(
     )
 
 
+def get_vanilla_options_sim_res(
+    market: Market, option: VanillaOption, last_prices: npt.NDArray
+) -> SimResults:
+    bid, ask = market.quotes[option].bid.price, market.quotes[option].ask.price
+
+    payoffs: npt.NDArray = (
+        np.maximum(last_prices - option.strike_price, 0)
+        if option.side == OptionSide.CALL
+        else np.maximum(option.strike_price - last_prices, 0)
+    )
+
+    payoffs_std: float = float(np.std(payoffs))
+    fair_value: float = float(np.mean(payoffs))
+
+    buy_edge: float = fair_value - ask
+    sell_edge: float = bid - fair_value
+
+    return SimResults(
+        product=option, payoffs_std=payoffs_std, buy_edge=buy_edge, sell_edge=sell_edge
+    )
+
+
 if __name__ == "__main__":
     market = build_market(RAW_QUOTES)
     print_market_state(market)
