@@ -238,6 +238,27 @@ def get_midprice(market: Market, product: Product) -> float:
 
 ### END OF MARKET
 
+### SIMULATION
+
+
+def generate_price_paths(
+    initial_price: float, variance: float, num_paths: int, steps: int
+) -> list[npt.NDArray]:
+    paths: list[npt.NDArray] = []
+
+    for _ in range(num_paths):
+        path: npt.NDArray = np.zeros(steps + 1)
+        path[0] = initial_price
+
+        for t in range(steps):
+            Z: float = np.random.normal()
+            log_return: float = -0.5 * variance**2 + Z * variance
+
+            path[t + 1] = path[t] * np.exp(log_return)
+
+        paths.append(path)
+
+    return paths
 
 if __name__ == "__main__":
     market = build_market(RAW_QUOTES)
