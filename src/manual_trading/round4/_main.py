@@ -313,8 +313,12 @@ def get_vanilla_options_sim_res(
 def get_simulation_results(
     price_paths: list[npt.NDArray], market: Market
 ) -> list[SimResults]:
+    two_week_steps = steps_for_weeks(2)
+
     last_prices: Final[npt.NDArray] = np.array([pp[-1] for pp in price_paths])
-    two_week_prices: Final[npt.NDArray] = np.array([pp[40] for pp in price_paths])
+    two_week_prices: Final[npt.NDArray] = np.array(
+        [pp[two_week_steps] for pp in price_paths]
+    )
 
     results = []
     for product in market.quotes.keys():
