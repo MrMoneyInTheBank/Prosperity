@@ -312,7 +312,7 @@ def get_vanilla_options_sim_res(
 
 
 def get_simulation_results(
-    price_paths: list[npt.NDArray], market: Market
+    price_paths: npt.NDArray, market: Market
 ) -> list[SimResults]:
     two_week_steps = steps_for_weeks(2)
 
@@ -367,7 +367,7 @@ if __name__ == "__main__":
     print_market_state(market)
 
     AC_initial_price: Final[float] = get_midprice(market, Underlying.AC)
-    price_paths: Final[list[npt.NDArray]] = generate_price_paths(
+    price_paths: Final[npt.NDArray] = generate_price_paths(
         AC_initial_price,
         AC_VOL_ANNUAL,
         num_paths=10000,
