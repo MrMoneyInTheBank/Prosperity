@@ -273,6 +273,21 @@ def generate_price_paths(
 
     return paths
 
+
+def get_underlying_sim_res(
+    market: Market, underlying: Underlying, last_prices: npt.NDArray
+):
+    bid, ask = market.quotes[underlying].bid.price, market.quotes[underlying].ask.price
+
+    fair_value: float = float(np.mean(last_prices))
+    buy_edge: float = fair_value - ask
+    sell_edge: float = bid - fair_value
+
+    return SimResults(
+        product=underlying, payoffs_std=None, buy_edge=buy_edge, sell_edge=sell_edge
+    )
+
+
 if __name__ == "__main__":
     market = build_market(RAW_QUOTES)
     print_market_state(market)
