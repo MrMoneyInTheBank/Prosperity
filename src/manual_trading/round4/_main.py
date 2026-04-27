@@ -337,6 +337,26 @@ def get_simulation_results(
     return results
 
 
+def print_simulation_results(results: list[SimResults]) -> None:
+    table = Table(title="Simulation Results")
+    table.add_column("Product", style="bold", justify="center")
+    table.add_column("Buy Edge", justify="center")
+    table.add_column("Sell Edge", justify="center")
+    table.add_column("Payoffs std", justify="center")
+
+    for res in results:
+        table.add_row(
+            str(res.product),
+            f"{res.buy_edge:.4f}",
+            f"{res.sell_edge:.4f}",
+            f"{res.payoffs_std:.4f}" if res.payoffs_std is not None else "N/A",
+        )
+
+    Console().print(table)
+
+
+### END OF SIMULATION
+
 if __name__ == "__main__":
     market = build_market(RAW_QUOTES)
     print_market_state(market)
