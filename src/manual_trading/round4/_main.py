@@ -1,5 +1,10 @@
 from dataclasses import dataclass
 from enum import StrEnum
+from rich.table import Table
+from rich.console import Console
+from types import MappingProxyType
+from typing import Final, Literal, Mapping, Union
+
 ### CONSTANTS
 
 TRADING_DAYS_PER_YEAR: Final[int] = 252
@@ -162,40 +167,56 @@ class Quote:
     ask: Ask
 
 
+@dataclass(frozen=True)
 class Market:
-    quotes: dict[Product, Quote] = {}
+    quotes: Mapping[Product, Quote]
 
-    @classmethod
-    def add_quote(cls, product: Product, bid: Bid, ask: Ask) -> None:
-        if product in cls.quotes:
-            raise KeyError(
-                f"Product {product} already has a quote in the market: {cls.quotes[product]}"
-            )
 
-        if bid.price > ask.price:
-            raise ValueError(f"Malformed quote: f{bid}, f{ask}")
+def build_market(raw_quotes: dict[Product, dict[str, list]]) -> Market:
+    return Market(
+        quotes=MappingProxyType(
+            {
+                product: Quote(bid=Bid(*quote["bid"]), ask=Ask(*quote["ask"]))
+                for product, quote in raw_quotes.items()
+            }
+        )
+    )
 
-        cls.quotes[product] = Quote(bid, ask)
 
-    @classmethod
-    def print_quotes(cls) -> None:
-        for product, quote in cls.quotes.items():
-            print(f"{product}: {quote}")
+def print_market_state(market: Market) -> None:
+    table = Table(title="Market Snapshot")
+
+    table.add_column("Bid Qty", justify="center")
+    table.add_column("Bid Price", justify="center")
+    table.add_column("Ticker", style="bold", justify="center")
+    table.add_column("Ask Price", justify="center")
+    table.add_column("Ask Qty", justify="center")
+
+    for p, q in market.quotes.items():
+        table.add_row(
+            str(q.bid.quantity),
+            f"{q.bid.price:.3f}",
+            str(p),
+            f"{q.ask.price:.3f}",
+            str(q.ask.quantity),
+        )
+
+    Console().print(table)
 
 
 RAW_QUOTES: dict[Product, dict[str, list]] = {
-    Product.AC: {"bid": [49.975, 200], "ask": [50.025, 200]},
-    Product.AC_50_C: {"bid": [12, 50], "ask": [12.05, 50]},
-    Product.AC_50_C_2: {"bid": [9.7, 50], "ask": [9.75, 50]},
-    Product.AC_60_C: {"bid": [8.8, 50], "ask": [8.85, 50]},
-    Product.AC_35_P: {"bid": [4.33, 50], "ask": [4.35, 50]},
-    Product.AC_40_P: {"bid": [6.5, 50], "ask": [6.55, 50]},
-    Product.AC_45_P: {"bid": [9.05, 50], "ask": [9.1, 50]},
-    Product.AC_50_P: {"bid": [12, 50], "ask": [12.05, 50]},
-    Product.AC_50_P_2: {"bid": [9.7, 50], "ask": [9.75, 50]},
-    Product.AC_50_CO: {"bid": [22.2, 50], "ask": [22.3, 50]},
-    Product.AC_40_BP: {"bid": [5, 50], "ask": [5.1, 50]},
-    Product.AC_45_KO: {"bid": [0.15, 500], "ask": [0.175, 500]},
+    Underlying.AC: {"bid": [49.975, 200], "ask": [50.025, 200]},
+    AC_50_C: {"bid": [12, 50], "ask": [12.05, 50]},
+    AC_50_C_2: {"bid": [9.7, 50], "ask": [9.75, 50]},
+    AC_60_C: {"bid": [8.8, 50], "ask": [8.85, 50]},
+    AC_35_P: {"bid": [4.33, 50], "ask": [4.35, 50]},
+    AC_40_P: {"bid": [6.5, 50], "ask": [6.55, 50]},
+    AC_45_P: {"bid": [9.05, 50], "ask": [9.1, 50]},
+    AC_50_P: {"bid": [12, 50], "ask": [12.05, 50]},
+    AC_50_P_2: {"bid": [9.7, 50], "ask": [9.75, 50]},
+    AC_50_CO: {"bid": [22.2, 50], "ask": [22.3, 50]},
+    AC_40_BP: {"bid": [5, 50], "ask": [5.1, 50]},
+    AC_45_KO: {"bid": [0.15, 500], "ask": [0.175, 500]},
 }
 
 
@@ -203,10 +224,5 @@ RAW_QUOTES: dict[Product, dict[str, list]] = {
 
 
 if __name__ == "__main__":
-    for product, quote in RAW_QUOTES.items():
-        bid = Bid(quote["bid"][0], quote["bid"][1])
-        ask = Ask(quote["ask"][0], quote["ask"][1])
-
-        Market.add_quote(product, bid, ask)
-
-    Market.print_quotes()
+    market = build_market(RAW_QUOTES)
+    print_market_state(market)
