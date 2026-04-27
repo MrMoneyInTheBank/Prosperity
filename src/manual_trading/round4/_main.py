@@ -345,6 +345,8 @@ def print_simulation_results(results: list[SimResults]) -> None:
     table.add_column("Buy Edge", justify="center")
     table.add_column("Sell Edge", justify="center")
     table.add_column("Payoffs std", justify="center")
+    table.add_column("Buy Score", justify="center")
+    table.add_column("Sell Score", justify="center")
 
     for res in results:
         table.add_row(
@@ -352,6 +354,16 @@ def print_simulation_results(results: list[SimResults]) -> None:
             f"{res.buy_edge:.4f}",
             f"{res.sell_edge:.4f}",
             f"{res.payoffs_std:.4f}" if res.payoffs_std is not None else "N/A",
+            (
+                f"{(res.buy_edge / res.payoffs_std):.4f}"
+                if res.payoffs_std is not None
+                else "N/A"
+            ),
+            (
+                f"{(res.sell_edge / res.payoffs_std):.4f}"
+                if res.payoffs_std is not None
+                else "N/A"
+            ),
         )
 
     Console().print(table)
