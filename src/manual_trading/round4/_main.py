@@ -220,6 +220,14 @@ RAW_QUOTES: dict[Product, dict[str, list]] = {
 }
 
 
+def midprice(quote: Quote) -> float:
+    return 0.5 * (quote.bid.price + quote.ask.price)
+
+
+def get_midprice(market: Market, product: Product) -> float:
+    return midprice(market.quotes[product])
+
+
 ### END OF MARKET
 
 
