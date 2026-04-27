@@ -315,10 +315,8 @@ def get_simulation_results(
 ) -> list[SimResults]:
     two_week_steps = steps_for_weeks(2)
 
-    last_prices: Final[npt.NDArray] = np.array([pp[-1] for pp in price_paths])
-    two_week_prices: Final[npt.NDArray] = np.array(
-        [pp[two_week_steps] for pp in price_paths]
-    )
+    last_prices: Final[npt.NDArray] = price_paths[:, -1]
+    two_week_prices: Final[npt.NDArray] = price_paths[:, two_week_steps]
 
     results = []
     for product in market.quotes.keys():
