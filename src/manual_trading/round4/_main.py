@@ -306,6 +306,31 @@ class BlackSholesResults:
     gamma: float
     vega: float
 
+
+def run_black_scholes(
+    underlying_midprice: float, options: list[VanillaOption]
+) -> list[BlackSholesResults]:
+    res: list[BlackSholesResults] = []
+    BS_CALL = BlackScholesCall()
+    BS_PUT = BlackScholesPut()
+
+    for opt in options:
+        T = (opt.TTE_weeks * TRADING_DAYS_PER_WEEK) / TRADING_DAYS_PER_YEAR
+        gamma = BS_CALL.gamma(opt.strike_price, underlying_midprice, T)
+        vega = BS_CALL.vega(opt.strike_price, underlying_midprice, T)
+
+        if opt.side == OptionSide.CALL:
+            fair_value = BS_CALL.price(opt.strike_price, underlying_midprice, T)
+            delta = BS_CALL.delta(opt.strike_price, underlying_midprice, T)
+            res.append(BlackSholesResults(opt, fair_value, delta, gamma, vega))
+        else:
+            fair_value = BS_PUT.price(opt.strike_price, underlying_midprice, T)
+            delta = BS_PUT.delta(opt.strike_price, underlying_midprice, T)
+            res.append(BlackSholesResults(opt, fair_value, delta, gamma, vega))
+
+    return res
+
+
 ### END OF BLACK SCHOLES
 
 ### SIMULATION
