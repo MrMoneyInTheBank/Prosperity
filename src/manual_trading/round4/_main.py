@@ -368,8 +368,6 @@ if __name__ == "__main__":
         num_paths=10000,
         steps=STEPS_PER_THREE_WEEKS,
     )
-    last_prices: Final[npt.NDArray] = np.array([pp[-1] for pp in price_paths])
-    two_week_prices: Final[npt.NDArray] = np.array([pp[40] for pp in price_paths])
 
     results = get_simulation_results(price_paths, market)
     print_simulation_results(results)
