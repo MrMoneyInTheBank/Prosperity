@@ -420,16 +420,22 @@ def get_underlying_sim_res(
     )
 
 
-def get_vanilla_options_sim_res(
-    market: Market, option: VanillaOption, last_prices: npt.NDArray
+def get_vanilla_binary_options_sim_res(
+    market: Market, option: VanillaOption | BinaryPut, last_prices: npt.NDArray
 ) -> SimResults:
+
+    def get_payoffs(opt: VanillaOption | BinaryPut) -> npt.NDArray:
+        if isinstance(opt, VanillaOption):
+            if opt.side == OptionSide.CALL:
+                return np.maximum(last_prices - option.strike_price, 0)
+            else:
+                return np.maximum(opt.strike_price - last_prices, 0)
+        elif isinstance(opt, BinaryPut):
+            return np.where(last_prices <= opt.strike_price, opt.payoff, 0)
+
     bid, ask = market.quotes[option].bid.price, market.quotes[option].ask.price
 
-    payoffs: npt.NDArray = (
-        np.maximum(last_prices - option.strike_price, 0)
-        if option.side == OptionSide.CALL
-        else np.maximum(option.strike_price - last_prices, 0)
-    )
+    payoffs: npt.NDArray = get_payoffs(option)
 
     payoffs_std: float = float(np.std(payoffs))
     fair_value: float = float(np.mean(payoffs))
@@ -458,15 +464,17 @@ def get_simulation_results(
     for product in market.quotes.keys():
         if isinstance(product, Underlying):
             results.append(get_underlying_sim_res(market, product, last_prices))
-        elif isinstance(product, VanillaOption):
+        elif isinstance(product, VanillaOption) or isinstance(product, BinaryPut):
             if product.TTE_weeks == 2:
                 results.append(
-                    get_vanilla_options_sim_res(market, product, two_week_prices),
+                    get_vanilla_binary_options_sim_res(
+                        market, product, two_week_prices
+                    ),
                 )
 
             else:
                 results.append(
-                    get_vanilla_options_sim_res(market, product, last_prices),
+                    get_vanilla_binary_options_sim_res(market, product, last_prices),
                 )
 
         else:
