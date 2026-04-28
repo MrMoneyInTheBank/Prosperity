@@ -302,6 +302,8 @@ class BlackScholesPut(BlackScholes):
 class BlackSholesResults:
     option: VanillaOption
     fair_value: float
+    buy_edge: float
+    sell_edge: float
     delta: float
     gamma: float
     vega: float
