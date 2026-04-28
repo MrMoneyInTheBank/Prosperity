@@ -542,6 +542,134 @@ def print_simulation_results(results: list[SimResults]) -> None:
 
 ### END OF SIMULATION
 
+### ORDERS
+
+
+@dataclass
+class Order:
+    product: Product
+    side: Bid | Ask
+
+    def __str__(self) -> str:
+        action: str = "BUY"
+        if isinstance(self.side, Ask):
+            action = "SELL"
+        return f"{self.product}: {action} {self.side.quantity} @ {m.floor(self.side.price)}"
+
+
+def get_product_res(
+    product: Product, sim_res: list[SimResults], bs_res: list[BlackSholesResults]
+) -> tuple[Optional[SimResults], Optional[BlackSholesResults]]:
+    sim = next((s for s in sim_res if s.product == product), None)
+    bs = (
+        next((b for b in bs_res if b.option == product), None)
+        if isinstance(product, VanillaOption)
+        else None
+    )
+    return sim, bs
+
+
+def get_orders(
+    market: Market, sim_res: list[SimResults], bs_res: list[BlackSholesResults]
+) -> tuple[list[Order], float, float]:
+    orders = []
+
+    scale: float = 100
+    net_delta: float = 0
+    net_gamma: float = 0
+
+    for product, quote in market.quotes.items():
+        if isinstance(product, Underlying):
+            continue
+
+        sim, bs = get_product_res(product, sim_res, bs_res)
+        assert sim is not None
+        assert sim.payoffs_std is not None
+
+        if sim.buy_edge < 0 and sim.sell_edge < 0:
+            continue
+
+        buy = True if sim.buy_edge > 0 else False
+        kelly = (
+            max(abs(sim.buy_edge), abs(sim.sell_edge)) / sim.payoffs_std
+        )  # Remove the **2
+        kelly_fraction = min(kelly * scale, 1.0)
+        available_qty = quote.ask.quantity if buy else quote.bid.quantity
+
+        qty = max(1, int(kelly_fraction * available_qty))
+        price = quote.bid.price if buy else quote.ask.price
+
+        if buy:
+            if bs is not None:
+                net_delta = net_delta + qty * bs.delta
+                net_gamma = net_gamma + qty * bs.gamma
+            orders.append(Order(product=product, side=Bid(price=price, quantity=qty)))
+        else:
+            if bs is not None:
+                net_delta = net_delta + qty * bs.delta
+                net_gamma = net_gamma + qty * bs.gamma
+            orders.append(Order(product=product, side=Ask(price=price, quantity=qty)))
+
+    if abs(net_delta) > 0.5:
+        underlying_quote = market.quotes[Underlying.AC]
+        if net_delta > 0:
+            orders.insert(
+                0,
+                Order(
+                    Underlying.AC, Ask(underlying_quote.ask.price, int(abs(net_delta)))
+                ),
+            )
+            net_delta -= int(abs(net_delta))
+        else:
+            orders.insert(
+                0,
+                Order(
+                    Underlying.AC, Bid(underlying_quote.bid.price, int(abs(net_delta)))
+                ),
+            )
+
+            net_delta += int(abs(net_delta))
+
+    return orders, net_delta, net_gamma
+
+
+def print_orders_results(orders: list[Order], delta: float, gamma: float) -> None:
+    table = Table(title="Orders")
+
+    table.add_column("Product", justify="center")
+    table.add_column("Side", justify="center")
+    table.add_column("Price", style="bold", justify="center")
+    table.add_column("Qty", justify="center")
+
+    for order in orders:
+        if isinstance(order.side, Ask):
+            table.add_row(
+                str(order.product),
+                "SELL",
+                f"{order.side.price}",
+                f"{order.side.quantity}",
+            )
+        else:
+            table.add_row(
+                str(order.product),
+                "BUY",
+                f"{order.side.price}",
+                f"{order.side.quantity}",
+            )
+
+    Console().print(table)
+
+    summary_table = Table(title="Portfolio Greeks")
+    summary_table.add_column("Metric", justify="center")
+    summary_table.add_column("Value", justify="center")
+    summary_table.add_row("Net Delta", f"{delta:.2f}")
+    summary_table.add_row("Net Gamma", f"{gamma:.6f}")
+
+    Console().print(summary_table)
+
+
+### END OF ORDERS
+
 if __name__ == "__main__":
     market: Final[Market] = build_market(RAW_QUOTES)
     print_market_state(market)
@@ -550,7 +678,7 @@ if __name__ == "__main__":
     price_paths: Final[npt.NDArray] = generate_price_paths(
         AC_initial_price,
         AC_VOL_ANNUAL,
-        num_paths=10000,
+        num_paths=100000,
         steps=steps_for_weeks(3),
     )
 
@@ -562,6 +690,8 @@ if __name__ == "__main__":
         AC_initial_price,
         [p for p in market.quotes.keys() if isinstance(p, VanillaOption)],
     )
+    orders, delta, gamma = get_orders(market, simulation_results, black_scholes_results)
 
     print_simulation_results(simulation_results)
     print_black_scholes_result(black_scholes_results)
+    print_orders_results(orders, delta, gamma)
