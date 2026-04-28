@@ -427,10 +427,18 @@ def get_payoffs(
     two_week_prices: npt.NDArray,
 ) -> npt.NDArray:
     if isinstance(opt, VanillaOption):
-        if opt.side == OptionSide.CALL:
-            return np.maximum(last_prices - opt.strike_price, 0)
+        if opt.TTE_weeks == 3:
+            if opt.side == OptionSide.CALL:
+                return np.maximum(last_prices - opt.strike_price, 0)
+            else:
+                return np.maximum(opt.strike_price - last_prices, 0)
+        elif opt.TTE_weeks == 2:
+            if opt.side == OptionSide.CALL:
+                return np.maximum(two_week_prices - opt.strike_price, 0)
+            else:
+                return np.maximum(opt.strike_price - two_week_prices, 0)
         else:
-            return np.maximum(opt.strike_price - last_prices, 0)
+            raise RuntimeError()
     elif isinstance(opt, BinaryPut):
         return np.where(last_prices <= opt.strike_price, opt.payoff, 0)
     elif isinstance(opt, ChooserOption):
