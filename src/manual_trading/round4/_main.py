@@ -457,6 +457,23 @@ def get_payoffs(
         raise RuntimeError()
 
 
+def get_delta(
+    opt: Option,
+    price_paths: npt.NDArray,
+    last_prices: npt.NDArray,
+    two_week_prices: npt.NDArray,
+) -> float:
+    """
+    Returns payoffs and estimated delta (sensitivity to spot price)
+    Delta ≈ dPayoff / dSpot
+    """
+    payoffs = get_payoffs(opt, price_paths, last_prices, two_week_prices)
+
+    delta_estimate = np.cov(last_prices, payoffs)[0, 1] / np.var(last_prices)
+
+    return float(delta_estimate)
+
+
 def get_options_sim_res(
     market: Market,
     option: Option,
@@ -570,7 +587,10 @@ def get_product_res(
 
 
 def get_orders(
-    market: Market, sim_res: list[SimResults], bs_res: list[BlackSholesResults]
+    market: Market,
+    price_paths: npt.NDArray,
+    sim_res: list[SimResults],
+    bs_res: list[BlackSholesResults],
 ) -> tuple[list[Order], float, float]:
     orders = []
 
@@ -599,15 +619,28 @@ def get_orders(
         qty = max(1, int(kelly_fraction * available_qty))
         price = quote.bid.price if buy else quote.ask.price
 
+        delta_contri = None
+
+        if bs is not None:
+            delta_contri = bs.delta
+        elif isinstance(product, (ChooserOption, BinaryPut, KnockOutPut)):
+            two_week_steps = steps_for_weeks(2)
+            two_week_prices = price_paths[:, two_week_steps]
+            last_prices = price_paths[:, -1]
+
+            delta_contri = get_delta(product, price_paths, last_prices, two_week_prices)
+
+        assert delta_contri is not None
+
         if buy:
-            if bs is not None:
-                net_delta = net_delta + qty * bs.delta
-                net_gamma = net_gamma + qty * bs.gamma
+            net_delta = net_delta + qty * delta_contri
+            net_gamma = net_gamma + qty * (bs.gamma if bs else 0.0)
+
             orders.append(Order(product=product, side=Bid(price=price, quantity=qty)))
         else:
-            if bs is not None:
-                net_delta = net_delta + qty * bs.delta
-                net_gamma = net_gamma + qty * bs.gamma
+            net_delta = net_delta + qty * delta_contri
+            net_gamma = net_gamma + qty * (bs.gamma if bs else 0.0)
+
             orders.append(Order(product=product, side=Ask(price=price, quantity=qty)))
 
     if abs(net_delta) > 0.5:
@@ -690,7 +723,9 @@ if __name__ == "__main__":
         AC_initial_price,
         [p for p in market.quotes.keys() if isinstance(p, VanillaOption)],
     )
-    orders, delta, gamma = get_orders(market, simulation_results, black_scholes_results)
+    orders, delta, gamma = get_orders(
+        market, price_paths, simulation_results, black_scholes_results
+    )
 
     print_simulation_results(simulation_results)
     print_black_scholes_result(black_scholes_results)
