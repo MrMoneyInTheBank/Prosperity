@@ -420,22 +420,48 @@ def get_underlying_sim_res(
     )
 
 
-def get_vanilla_binary_options_sim_res(
-    market: Market, option: VanillaOption | BinaryPut, last_prices: npt.NDArray
-) -> SimResults:
+def get_payoffs(
+    opt: Option,
+    price_paths: npt.NDArray,
+    last_prices: npt.NDArray,
+    two_week_prices: npt.NDArray,
+) -> npt.NDArray:
+    if isinstance(opt, VanillaOption):
+        if opt.side == OptionSide.CALL:
+            return np.maximum(last_prices - opt.strike_price, 0)
+        else:
+            return np.maximum(opt.strike_price - last_prices, 0)
+    elif isinstance(opt, BinaryPut):
+        return np.where(last_prices <= opt.strike_price, opt.payoff, 0)
+    elif isinstance(opt, ChooserOption):
+        mask_is_call = two_week_prices > opt.strike_price
+        call_payoffs = np.maximum(last_prices - opt.strike_price, 0)
+        put_payoffs = np.maximum(opt.strike_price - last_prices, 0)
 
-    def get_payoffs(opt: VanillaOption | BinaryPut) -> npt.NDArray:
-        if isinstance(opt, VanillaOption):
-            if opt.side == OptionSide.CALL:
-                return np.maximum(last_prices - option.strike_price, 0)
-            else:
-                return np.maximum(opt.strike_price - last_prices, 0)
-        elif isinstance(opt, BinaryPut):
-            return np.where(last_prices <= opt.strike_price, opt.payoff, 0)
+        return np.where(mask_is_call, call_payoffs, put_payoffs)
+    elif isinstance(opt, KnockOutPut):
+        min_price_per_path = np.min(price_paths, axis=1)
+        knocked_out = min_price_per_path < opt.barrier_price
+        put_payoffs = np.maximum(opt.strike_price - last_prices, 0)
+
+        return np.where(knocked_out, 0, put_payoffs)
+    else:
+        raise RuntimeError()
+
+
+def get_options_sim_res(
+    market: Market,
+    option: Option,
+    price_paths: npt.NDArray,
+    last_prices: npt.NDArray,
+    two_week_prices: npt.NDArray,
+) -> SimResults:
 
     bid, ask = market.quotes[option].bid.price, market.quotes[option].ask.price
 
-    payoffs: npt.NDArray = get_payoffs(option)
+    payoffs: npt.NDArray = get_payoffs(
+        option, price_paths, last_prices, two_week_prices
+    )
 
     payoffs_std: float = float(np.std(payoffs))
     fair_value: float = float(np.mean(payoffs))
@@ -464,21 +490,12 @@ def get_simulation_results(
     for product in market.quotes.keys():
         if isinstance(product, Underlying):
             results.append(get_underlying_sim_res(market, product, last_prices))
-        elif isinstance(product, VanillaOption) or isinstance(product, BinaryPut):
-            if product.TTE_weeks == 2:
-                results.append(
-                    get_vanilla_binary_options_sim_res(
-                        market, product, two_week_prices
-                    ),
+        elif isinstance(product, Option):
+            results.append(
+                get_options_sim_res(
+                    market, product, price_paths, last_prices, two_week_prices
                 )
-
-            else:
-                results.append(
-                    get_vanilla_binary_options_sim_res(market, product, last_prices),
-                )
-
-        else:
-            continue
+            )
 
     return results
 
