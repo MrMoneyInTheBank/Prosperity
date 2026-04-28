@@ -359,6 +359,7 @@ def print_black_scholes_result(results: list[BlackSholesResults]) -> None:
 @dataclass(frozen=True)
 class SimResults:
     product: Product
+    fair_value: float
     payoffs_std: Optional[float]
     buy_edge: float
     sell_edge: float
@@ -401,7 +402,11 @@ def get_underlying_sim_res(
     sell_edge: float = bid - fair_value
 
     return SimResults(
-        product=underlying, payoffs_std=None, buy_edge=buy_edge, sell_edge=sell_edge
+        product=underlying,
+        fair_value=fair_value,
+        payoffs_std=None,
+        buy_edge=buy_edge,
+        sell_edge=sell_edge,
     )
 
 
@@ -423,7 +428,11 @@ def get_vanilla_options_sim_res(
     sell_edge: float = bid - fair_value
 
     return SimResults(
-        product=option, payoffs_std=payoffs_std, buy_edge=buy_edge, sell_edge=sell_edge
+        product=option,
+        fair_value=fair_value,
+        payoffs_std=payoffs_std,
+        buy_edge=buy_edge,
+        sell_edge=sell_edge,
     )
 
 
@@ -459,6 +468,7 @@ def get_simulation_results(
 def print_simulation_results(results: list[SimResults]) -> None:
     table = Table(title="Simulation Results")
     table.add_column("Product", style="bold", justify="center")
+    table.add_column("Fair Value", justify="center")
     table.add_column("Buy Edge", justify="center")
     table.add_column("Sell Edge", justify="center")
     table.add_column("Payoffs std", justify="center")
@@ -468,6 +478,7 @@ def print_simulation_results(results: list[SimResults]) -> None:
     for res in results:
         table.add_row(
             str(res.product),
+            f"{res.fair_value:.4f}",
             f"{res.buy_edge:.4f}",
             f"{res.sell_edge:.4f}",
             f"{res.payoffs_std:.4f}" if res.payoffs_std is not None else "N/A",
