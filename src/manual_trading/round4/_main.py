@@ -373,11 +373,6 @@ class SimResults:
     buy_edge: float
     sell_edge: float
 
-    def __str__(self) -> str:
-        if self.payoffs_std is None:
-            return f"{self.product}: BUY_EDGE = {self.buy_edge:.4f}, SELL_EDGE = {self.sell_edge:.4f}"
-        return f"{self.product}: BUY_EDGE = {self.buy_edge:.4f}, SELL_EDGE = {self.sell_edge:.4f}, PAYOFFS_STD: {self.payoffs_std:.4f}"
-
 
 def generate_price_paths(
     initial_price: float,
