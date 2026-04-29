@@ -18,3 +18,6 @@ class Product(StrEnum):
 class Article:
     headline: str
     body: str
+
+
+type Newspaper = dict[Product, Article]
