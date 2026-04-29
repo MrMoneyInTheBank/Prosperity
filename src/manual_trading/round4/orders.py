@@ -1,22 +1,23 @@
 from typing import Optional
+
 import numpy.typing as npt
 
-from src.manual_trading.round4.option_metrics import get_delta
-from src.manual_trading.round4.utils import steps_for_weeks
 from src.manual_trading.round4.datatypes import (
     Ask,
     Bid,
+    BinaryPut,
     BlackScholesResult,
     ChooserOption,
-    BinaryPut,
     KnockOutPut,
-    VanillaOption,
-    Product,
     Market,
+    Order,
+    Product,
     SimResult,
     Underlying,
-    Order,
+    VanillaOption,
 )
+from src.manual_trading.round4.option_metrics import get_delta
+from src.manual_trading.round4.utils import steps_for_weeks
 
 
 def get_product_res(

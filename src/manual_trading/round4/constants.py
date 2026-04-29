@@ -1,12 +1,12 @@
 from typing import Final
 
 from src.manual_trading.round4.datatypes import (
-    Product,
-    Underlying,
     BinaryPut,
     ChooserOption,
     KnockOutPut,
     OptionSide,
+    Product,
+    Underlying,
     VanillaOption,
 )
 

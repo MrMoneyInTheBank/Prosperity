@@ -1,4 +1,4 @@
-from src.manual_trading.round4.constants import TRADING_DAYS_PER_YEAR, STEPS_PER_DAY
+from src.manual_trading.round4.constants import STEPS_PER_DAY, TRADING_DAYS_PER_YEAR
 
 
 def weeks_to_years(weeks: float) -> float:

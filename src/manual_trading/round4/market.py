@@ -1,5 +1,6 @@
 from types import MappingProxyType
-from src.manual_trading.round4.datatypes import Product, Market, Quote, Bid, Ask
+
+from src.manual_trading.round4.datatypes import Ask, Bid, Market, Product, Quote
 
 
 def build_market(raw_quotes: dict[Product, dict[str, list]]) -> Market:

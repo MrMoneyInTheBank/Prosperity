@@ -1,7 +1,7 @@
 import math as m
 from dataclasses import dataclass
 from enum import StrEnum
-from typing import Literal, Union, Mapping, Optional
+from typing import Literal, Mapping, Optional, Union
 
 
 class Underlying(StrEnum):

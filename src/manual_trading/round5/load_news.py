@@ -1,7 +1,7 @@
 import json
 from pathlib import Path
 
-from src.manual_trading.round5.datatypes import Product, Article, Newspaper
+from src.manual_trading.round5.datatypes import Article, Newspaper, Product
 
 
 def load_news_json(news_json_path: Path) -> Newspaper:
