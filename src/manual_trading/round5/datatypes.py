@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from enum import StrEnum
+from typing import Mapping
 
 
 class Product(StrEnum):
@@ -20,4 +21,4 @@ class Article:
     body: str
 
 
-type Newspaper = dict[Product, Article]
+type Newspaper = Mapping[Product, Article]
