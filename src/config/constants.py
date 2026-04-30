@@ -39,6 +39,9 @@ TRADER_HEADER_FILE: t.Final[Path] = TEMPLATES_DIR / "trader_header.txt"
 TRADER_FOOTER_FILE: t.Final[Path] = TEMPLATES_DIR / "trader_footer.txt"
 TRADER_FILE: t.Final[Path] = TRADERS_DIR / "trader.py"
 
+# Manual trading data
+NEWSPAPER_JSON_FILE: t.Final[Path] = DATA_DIR / "round5" / "newspaper.json"
+
 
 class Product(StrEnum):
     EMERALDS = "EMERALDS"
