@@ -200,13 +200,17 @@ class OrderBookRegistry:
 
             for price, sides in sorted(orderbook.orders.items(), reverse=True):
                 table.add_row(
-                    str(sum(order.quantity for order in sides[Side.BID]))
-                    if sides[Side.BID]
-                    else "",
+                    (
+                        str(sum(order.quantity for order in sides[Side.BID]))
+                        if sides[Side.BID]
+                        else ""
+                    ),
                     str(price),
-                    str(sum(order.quantity for order in sides[Side.ASK]))
-                    if sides[Side.ASK]
-                    else "",
+                    (
+                        str(sum(order.quantity for order in sides[Side.ASK]))
+                        if sides[Side.ASK]
+                        else ""
+                    ),
                 )
 
             console.print(table)
@@ -364,4 +368,5 @@ if __name__ == "__main__":
 
     print(f"Total PnL: {total_pnl}")
 
+    OrderBookRegistry.print_orderbooks()
     OrderBookRegistry.clear()
