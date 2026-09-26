@@ -2,6 +2,9 @@ from dataclasses import dataclass
 from enum import StrEnum
 from typing import Final
 
+from rich.console import Console
+from rich.table import Table
+
 #################################################################
 ## CONSTANTS / DATA TYPES #######################################
 #################################################################
@@ -182,6 +185,31 @@ class OrderBookRegistry:
     @classmethod
     def clear(cls) -> None:
         cls._books.clear()
+
+    @classmethod
+    def print_orderbooks(cls, console: Console | None = None) -> None:
+        """Print each orderbook with quantities aggregated by price level."""
+        if console is None:
+            console = Console()
+
+        for product, orderbook in cls._books.items():
+            table = Table(title=f"{product} Orderbook")
+            table.add_column("Bid Qty", justify="center")
+            table.add_column("Price", justify="center", style="bold")
+            table.add_column("Ask Qty", justify="center")
+
+            for price, sides in sorted(orderbook.orders.items(), reverse=True):
+                table.add_row(
+                    str(sum(order.quantity for order in sides[Side.BID]))
+                    if sides[Side.BID]
+                    else "",
+                    str(price),
+                    str(sum(order.quantity for order in sides[Side.ASK]))
+                    if sides[Side.ASK]
+                    else "",
+                )
+
+            console.print(table)
 
 
 def submit_and_fill(product: Product, my_order: Order) -> tuple[int, int]:
