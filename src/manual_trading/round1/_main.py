@@ -55,11 +55,11 @@ EMBER_MUSHROOM_BIDS: Final[list[Order]] = [
 EMBER_MUSHROOM_ASKS: Final[list[Order]] = [
     Order(Side.ASK, 12, 20_000),
     Order(Side.ASK, 13, 25_000),
-    Order(Side.ASK, 14, 50_000),
+    Order(Side.ASK, 14, 35_000),
     Order(Side.ASK, 15, 6_000),
     Order(Side.ASK, 16, 5_000),
     Order(Side.ASK, 17, 0),
-    Order(Side.ASK, 18, 18_000),
+    Order(Side.ASK, 18, 10_000),
     Order(Side.ASK, 19, 12_000),
 ]
 
