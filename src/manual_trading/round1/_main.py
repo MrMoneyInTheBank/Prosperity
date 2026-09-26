@@ -69,6 +69,7 @@ EMBER_MUSHROOM_MAX_QTY = 75_000
 DRYLAND_FLAX_BUYBACK_PER_UNIT = 30
 EMBER_MUSHROOM_BUYBACK_PER_UNIT = 20
 
+DRYLAND_FLAX_FEES_PER_UNIT = 0.0
 EMBER_MUSHROOM_FEES_PER_UNIT = 0.1
 
 
@@ -285,7 +286,7 @@ def compute_pnl(
     # Get constants
     if product == Product.DRYLAND_FLAX:
         buyback = DRYLAND_FLAX_BUYBACK_PER_UNIT
-        fees = 0.0
+        fees = DRYLAND_FLAX_FEES_PER_UNIT
     elif product == Product.EMBER_MUSHROOM:
         buyback = EMBER_MUSHROOM_BUYBACK_PER_UNIT
         fees = EMBER_MUSHROOM_FEES_PER_UNIT
