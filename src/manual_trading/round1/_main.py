@@ -289,13 +289,10 @@ def compute_pnl(
     # Compute PnL
     if order.side == Side.BID:
         # You bought at clearing_price, sell at buyback
-        pnl = float(filled_qty * (buyback - clearing_price))
+        pnl = float(filled_qty * (buyback - clearing_price - fees))
     else:  # ASK
         # You sold at clearing_price, buy back at buyback
-        pnl = float(filled_qty * (clearing_price - buyback))
-
-    # Subtract fees
-    pnl -= filled_qty * fees
+        pnl = float(filled_qty * (clearing_price - buyback - fees))
 
     return pnl
 
