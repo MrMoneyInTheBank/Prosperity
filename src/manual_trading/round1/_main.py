@@ -314,43 +314,54 @@ if __name__ == "__main__":
     # Create a test order
     dryland_flax_order = Order(
         side=Side.BID,
-        price=35,
-        quantity=18_000,
+        price=30,
+        quantity=9_999,
     )
 
-    ember_mushroom_order = Order(
-        side=Side.BID,
-        price=14,
-        quantity=43_000,
-    )
-
-    # Run simulation
-    print("DRYLAND FLAX")
-    print(dryland_flax_order)
     dryland_flax_clearing_price, dryland_flax_filled_qty = submit_and_fill(
         Product.DRYLAND_FLAX,
         dryland_flax_order,
     )
-
-    print("Clearing Price:", dryland_flax_clearing_price)
-    print("Filled Quantity:", dryland_flax_filled_qty)
-    print(
-        f"PnL: {compute_pnl(Product.DRYLAND_FLAX, dryland_flax_order, dryland_flax_clearing_price, dryland_flax_filled_qty)}"
+    dryland_flax_pnl = compute_pnl(
+        Product.DRYLAND_FLAX,
+        dryland_flax_order,
+        dryland_flax_clearing_price,
+        dryland_flax_filled_qty,
     )
-    print("\n")
 
-    print("EMBER MUSHROOM")
-    print(ember_mushroom_order)
+    ember_mushroom_order = Order(
+        side=Side.BID,
+        price=17,
+        quantity=19_999,
+    )
     ember_mushroom_clearing_price, ember_mushroom_filled_qty = submit_and_fill(
         Product.EMBER_MUSHROOM,
         ember_mushroom_order,
     )
+    ember_mushroom_pnl = compute_pnl(
+        Product.EMBER_MUSHROOM,
+        ember_mushroom_order,
+        ember_mushroom_clearing_price,
+        ember_mushroom_filled_qty,
+    )
 
+    total_pnl = dryland_flax_pnl + ember_mushroom_pnl
+
+    # Run simulation
+    print("DRYLAND FLAX")
+    print(dryland_flax_order)
+    print("Clearing Price:", dryland_flax_clearing_price)
+    print("Filled Quantity:", dryland_flax_filled_qty)
+    print(f"PnL: {dryland_flax_pnl}")
+    print("\n")
+
+    print("EMBER MUSHROOM")
+    print(ember_mushroom_order)
     print("Clearing Price:", ember_mushroom_clearing_price)
     print("Filled Quantity:", ember_mushroom_filled_qty)
-    print(
-        f"PnL: {compute_pnl(Product.EMBER_MUSHROOM, ember_mushroom_order, ember_mushroom_clearing_price, ember_mushroom_filled_qty)}"
-    )
+    print(f"PnL: {ember_mushroom_pnl}")
     print("\n")
-    # Reset registry (important if rerunning in same session)
+
+    print(f"Total PnL: {total_pnl}")
+
     OrderBookRegistry.clear()
